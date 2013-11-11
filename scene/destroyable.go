@@ -10,7 +10,6 @@ type Destoyable struct {
 	Alive           bool
 	HP              float32
 	FullHP          float32
-	Team            int
 	destoyableFuncs DestoyableFuncs
 
 	createTime    time.Time
@@ -18,8 +17,8 @@ type Destoyable struct {
 	autoDestory   bool
 }
 
-func NewDestoyable(hp float32, team int) *Destoyable {
-	return &Destoyable{BaseComponent: engine.NewComponent(), FullHP: hp, Alive: true, HP: hp, Team: team}
+func NewDestoyable(hp float32) *Destoyable {
+	return &Destoyable{BaseComponent: engine.NewComponent(), FullHP: hp, Alive: true, HP: hp}
 }
 
 type DestoyableFuncs interface {
@@ -65,7 +64,7 @@ func (ds *Destoyable) OnCollisionEnter(arbiter engine.Arbiter) bool {
 	dmg, _ = enemy.ComponentTypeOf(dmg).(*DamageDealer)
 	enemyDestoyable, _ = enemy.ComponentTypeOf(enemyDestoyable).(*Destoyable)
 
-	if enemyDestoyable == nil || enemyDestoyable.Team == ds.Team {
+	if enemyDestoyable == nil {
 		return true
 	}
 

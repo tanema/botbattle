@@ -5,8 +5,8 @@ import (
   "runtime"
 	"github.com/vova616/GarageEngine/engine"
 	"github.com/vova616/GarageEngine/engine/input"
-  "botbattle/scene"
-  "botbattle/server"
+  "github.com/tanema/botbattle/scene"
+  "github.com/tanema/botbattle/server"
 )
 
 func main() {

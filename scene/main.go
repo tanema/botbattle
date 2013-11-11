@@ -84,7 +84,7 @@ func SpawnBot(name string) {
 
 	newPlayerController.HPBar = HealthBar
 	newPlayerController.Missle = missle
-	newPlayer.AddComponent(NewDestoyable(float32(1000), 1))
+	newPlayer.AddComponent(NewDestoyable(float32(1000)))
 }
 
 func (s *MainScene) Load() {
@@ -137,9 +137,13 @@ func (s *MainScene) Load() {
 	missle = NewMissle(30000)
 	missleGameObject.AddComponent(missle)
 	missle.Explosion = Explosion
-	ds := NewDestoyable(0, 1)
+	ds := NewDestoyable(0)
 	ds.SetDestroyTime(1)
 	missleGameObject.AddComponent(ds)
+
+	//SPACCCEEEEE
+	engine.Space.Gravity.Y = 0
+	engine.Space.Iterations = 10
 
 	s.Layer1 = engine.NewGameObject("Layer1")
 
