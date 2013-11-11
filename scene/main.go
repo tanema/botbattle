@@ -75,16 +75,31 @@ func SpawnBot(name string) {
 	HealthBarGUI.Transform().SetPositionf((uvHP.Ratio/2)*HealthBarGUI.Transform().Scale().X, 0)
 
   newPlayer := engine.NewGameObject(name)
-  newPlayerController := newPlayer.AddComponent(NewBotController()).(*BotController)
 	newPlayer.AddComponent(engine.NewSprite(botTexture))
+	newPlayer.AddComponent(NewDestoyable(float32(500)))
 	newPlayer.Transform().SetParent2(MainSceneGeneral.Layer1)
 	newPlayer.Transform().SetWorldPositionf(50, 50)
-	newPlayer.Transform().SetWorldRotationf(0)
-	newPlayer.Transform().SetWorldScalef(50, 50)
+	newPlayer.Transform().SetScalef(50, 50)
+	newPlayer.Transform().SetParent2(MainSceneGeneral.Layer1)
 
+  newPlayerController := newPlayer.AddComponent(NewBotController()).(*BotController)
 	newPlayerController.HPBar = HealthBar
 	newPlayerController.Missle = missle
-	newPlayer.AddComponent(NewDestoyable(float32(1000)))
+
+  phx := newPlayer.AddComponent(engine.NewPhysics(false)).(*engine.Physics)
+  phx.Shape.SetFriction(0.5)
+  phx.Shape.SetElasticity(0.5)
+}
+
+func SpawnotherBot(name string) {
+  newPlayer := engine.NewGameObject(name)
+	newPlayer.AddComponent(engine.NewSprite(botTexture))
+  newPlayer.AddComponent(engine.NewPhysics(false))
+	newPlayer.AddComponent(NewDestoyable(float32(500)))
+	newPlayer.Transform().SetParent2(MainSceneGeneral.Layer1)
+	newPlayer.Transform().SetWorldPositionf(25, 25)
+	newPlayer.Transform().SetScalef(50, 50)
+	newPlayer.Transform().SetParent2(MainSceneGeneral.Layer1)
 }
 
 func (s *MainScene) Load() {

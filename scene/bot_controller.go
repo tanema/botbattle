@@ -33,7 +33,6 @@ func (sp *BotController) Start() {
 }
 
 func (sp *BotController) OnHit(enemey *engine.GameObject, damager *DamageDealer) {
-  println("on hit")
 	if sp.HPBar != nil && sp.Destoyable != nil {
 		hp := (float32(sp.Destoyable.HP) / float32(sp.Destoyable.FullHP)) * 100
 		s := sp.HPBar.Transform().Scale()

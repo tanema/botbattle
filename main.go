@@ -27,5 +27,8 @@ func main() {
 		if input.KeyPress('`') {
       scene.SpawnBot("tim")
     }
+		if input.KeyPress('1') {
+      scene.SpawnotherBot("dave")
+    }
   }
 }
