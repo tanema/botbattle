@@ -21,6 +21,7 @@ var (
   Explosion_ID      engine.ID
 	missle            *Missle
 	Explosion         *engine.GameObject
+  Players           map[string]*BotController
 )
 
 const (
@@ -50,14 +51,32 @@ func LoadTextures() {
 }
 
 func SpawnBot(name string) *BotController {
+	newPlayerController, exists := Players[name]
+	if exists {
+    newPlayerController.OnDie(false)
+	}
+  newPlayer := engine.NewGameObject(name)
+  newPlayer.AddComponent(engine.NewPhysics(false))
+  newPlayer.AddComponent(engine.NewSprite(botTexture))
+	newPlayer.AddComponent(NewDestoyable(float32(500)))
+	newPlayer.Transform().SetWorldPositionf(50, 50)
+	newPlayer.Transform().SetScalef(50, 50)
+	newPlayer.Transform().SetParent2(MainSceneGeneral.Layer1)
+
 	Health := engine.NewGameObject("HP")
 	Health.Transform().SetParent2(MainSceneGeneral.Camera.GameObject())
-	Health.Transform().SetPositionf(-float32(engine.Width)/2+150, -float32(engine.Height)/2+50)
+
+	Name := engine.NewGameObject("Name")
+	Name.Transform().SetParent2(Health)
+	Name.AddComponent(components.NewUIText(ArialFont, name))
+	Name.Transform().SetDepth(10)
+	Name.Transform().SetPositionf(0, 0)
+	Name.Transform().SetScalef(20, 20)
 
 	HealthGUI := engine.NewGameObject("HPGUI")
 	HealthGUI.AddComponent(engine.NewSprite2(atlas.Texture, engine.IndexUV(atlas, HPGUI_A)))
 	HealthGUI.Transform().SetParent2(Health)
-	HealthGUI.Transform().SetDepth(3)
+	HealthGUI.Transform().SetDepth(4)
 	HealthGUI.Transform().SetPositionf(0, 0)
 	HealthGUI.Transform().SetScalef(50, 50)
 
@@ -71,26 +90,21 @@ func SpawnBot(name string) *BotController {
 	HealthBarGUI.Transform().SetParent2(HealthBar)
 	HealthBarGUI.AddComponent(engine.NewSprite2(atlas.Texture, uvHP))
 	HealthBarGUI.Transform().SetScalef(0.52, 1)
-	HealthBarGUI.Transform().SetDepth(2)
+	HealthBarGUI.Transform().SetDepth(3)
 	HealthBarGUI.Transform().SetPositionf((uvHP.Ratio/2)*HealthBarGUI.Transform().Scale().X, 0)
 
-  newPlayer := engine.NewGameObject(name)
-  newPlayer.AddComponent(engine.NewPhysics(false))
-  newPlayer.AddComponent(engine.NewSprite(botTexture))
-	newPlayer.AddComponent(NewDestoyable(float32(500)))
-	newPlayer.Transform().SetWorldPositionf(50, 50)
-	newPlayer.Transform().SetScalef(50, 50)
-	newPlayer.Transform().SetParent2(MainSceneGeneral.Layer1)
-
-  newPlayerController := newPlayer.AddComponent(NewBotController()).(*BotController)
+  newPlayerController = newPlayer.AddComponent(NewBotController()).(*BotController)
 	newPlayerController.HPBar = HealthBar
 	newPlayerController.Missle = missle
+  Players[name] = newPlayerController
+	Health.Transform().SetPositionf(-float32(engine.Width)/2+150, -float32(engine.Height)/2+(50*float32(len(Players))))
 
-  return newPlayerController
+  return Players[name]
 }
 
 func (s *MainScene) Load() {
 	engine.SetTitle("Bot Battle!")
+  Players = make(map[string]*BotController)
 	LoadTextures()
 
 	s.Camera = engine.NewCamera()

@@ -19,11 +19,7 @@ func NewBotController() *BotController {
   return &BotController{engine.NewComponent(), nil, nil, nil, time.Now()}
 }
 func (sp *BotController) Start() {
-	//ph := sp.GameObject().Physics
-	//ph.Body.SetMass(50)
-	//ph.Shape.Group = 1
-	//sp.Destoyable = sp.GameObject().ComponentTypeOf(sp.Destoyable).(*Destoyable)
-	//sp.OnHit(nil, nil)
+	sp.Destoyable = sp.GameObject().ComponentTypeOf(sp.Destoyable).(*Destoyable)
 }
 
 func (sp *BotController) OnHit(enemey *engine.GameObject, damager *DamageDealer) {
@@ -36,6 +32,10 @@ func (sp *BotController) OnHit(enemey *engine.GameObject, damager *DamageDealer)
 }
 
 func (sp *BotController) OnDie(byTimer bool) {
+  if sp.GameObject() == nil {
+    return
+  }
+
 	for i := 0; i < 20; i++ {
 		n := Explosion.Clone()
 		n.Transform().SetParent2(MainSceneGeneral.Layer1)
