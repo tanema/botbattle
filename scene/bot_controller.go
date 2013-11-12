@@ -2,34 +2,28 @@ package scene
 
 import (
 	"github.com/vova616/GarageEngine/engine"
-	"github.com/vova616/GarageEngine/engine/input"
 	"math"
 	"math/rand"
   "time"
 )
 
 type BotController struct {
-	engine.BaseComponent                    `json:"-"`
-	Missle               *Missle            `json:"-"`
-	HPBar                *engine.GameObject `json:"-"`
-	Destoyable           *Destoyable        `json:"-"`
-	lastShoot            time.Time          `json:"-"`
+	engine.BaseComponent
+	Missle               *Missle
+	HPBar                *engine.GameObject
+	Destoyable           *Destoyable
+	lastShoot            time.Time
 }
 
 func NewBotController() *BotController {
   return &BotController{engine.NewComponent(), nil, nil, nil, time.Now()}
 }
-
-func (sp *BotController) OnComponentAdd() {
-	sp.GameObject().AddComponent(engine.NewPhysicsCircle(false))
-}
-
 func (sp *BotController) Start() {
-	ph := sp.GameObject().Physics
-	ph.Body.SetMass(50)
-	ph.Shape.Group = 1
-	sp.Destoyable = sp.GameObject().ComponentTypeOf(sp.Destoyable).(*Destoyable)
-	sp.OnHit(nil, nil)
+	//ph := sp.GameObject().Physics
+	//ph.Body.SetMass(50)
+	//ph.Shape.Group = 1
+	//sp.Destoyable = sp.GameObject().ComponentTypeOf(sp.Destoyable).(*Destoyable)
+	//sp.OnHit(nil, nil)
 }
 
 func (sp *BotController) OnHit(enemey *engine.GameObject, damager *DamageDealer) {
@@ -62,10 +56,10 @@ func (sp *BotController) OnDie(byTimer bool) {
 }
 
 func (sp *BotController) Shoot() {
-	if sp.Missle != nil {
+	if sp.Missle != nil && time.Now().After(sp.lastShoot) {
 		a := sp.Transform().Rotation()
 
-    pos := engine.Vector{0, 0, 0}
+    pos := engine.Vector{0, 37, 0}
     s := sp.Transform().DirectionTransform(engine.Vector{0,1,0})
 
     p := sp.Transform().WorldPosition()
@@ -86,44 +80,12 @@ func (sp *BotController) Shoot() {
     angle := float32(math.Atan2(float64(s.X), float64(s.Y))) * engine.DegreeConst
 
     nfire.Physics.Body.SetVelocity(float32(v.X), float32(v.Y))
-    nfire.Physics.Body.AddForce(s.X*3000, s.Y*3000)
+    nfire.Physics.Body.AddForce(s.X*5000, s.Y*5000)
 
     nfire.Physics.Shape.Group = 1
     nfire.Physics.Body.SetMoment(engine.Inf)
     nfire.Transform().SetRotationf(180 - angle)
-	}
-}
 
-func (sp *BotController) Update() {
-  Speed := float32(500000)
-	rotSpeed := float32(250)
-
-	delta := float32(engine.DeltaTime())
-	r2 := sp.Transform().DirectionTransform(engine.Up)
-	ph := sp.GameObject().Physics
-	rx, ry := r2.X*delta, r2.Y*delta
-
-	if input.KeyDown('W') {
-		ph.Body.AddForce(Speed*rx, Speed*ry)
-	}
-	if input.KeyDown('S') {
-		ph.Body.AddForce(-Speed*rx, -Speed*ry)
-	}
-	r := sp.Transform().Rotation()
-  if input.KeyDown('D') {
-    sp.Transform().SetRotationf(r.Z - rotSpeed*delta)
-  }
-	if input.KeyDown('A') {
-		sp.Transform().SetRotationf(r.Z + rotSpeed*delta)
-  }
-  if input.KeyDown('G') {
-    sp.OnDie(false)
-  }
-
-	if input.MouseDown(input.MouseLeft) {
-		if time.Now().After(sp.lastShoot) {
-			sp.Shoot()
-			sp.lastShoot = time.Now().Add(time.Millisecond * 200)
-		}
+    sp.lastShoot = time.Now().Add(time.Millisecond * 200)
 	}
 }

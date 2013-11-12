@@ -20,7 +20,6 @@ func NewServer(host string) server {
 func (s *server) Listen(){
   fmt.Printf("listening on %s \n", s.host)
   listen, _ := net.Listen("tcp", s.host)
-  go s.handleMessages()
   for {
     conn, err := listen.Accept()
     if err != nil {
@@ -30,14 +29,14 @@ func (s *server) Listen(){
   }
 }
 
-func (s *server) handleMessages() {
-  for s := range s.send {
-    bits := strings.SplitN(s, " ", 3)
-    if len(bits) != 3 {
-      fmt.Printf("Error: invalid line: %v\n", bits)
-      continue
-    }
-    //handle action
+func (s *server) handleMessages(conn net.Conn, message string) {
+  bits := strings.SplitN(message, " ", 3)
+  if len(bits) != 3 {
+    fmt.Printf("Error: invalid line: %v\n", bits)
+  }
+  _, err := conn.Write([]byte("put_message_id_here" + " " + "response_goes_here" + "\n"))
+  if err != nil {
+    fmt.Printf("error writing out to connection: %s \n", err)
   }
 }
 
@@ -55,6 +54,6 @@ func (s *server) handlePeer(conn net.Conn){
       println("disconnecting peer")
       return
     }
-    s.send <- line
+    s.handleMessages(conn, line)
   }
 }

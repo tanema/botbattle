@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+  var player *scene.BotController
 	runtime.GOMAXPROCS(8)
 	defer func() {
 		engine.Terminate()
@@ -24,11 +25,36 @@ func main() {
   game_server := server.NewServer(host)
   go game_server.Listen()
 	for engine.MainLoop() {
-		if input.KeyPress('`') {
-      scene.SpawnBot("tim")
+		if input.KeyPress('`') && player == nil {
+      player = scene.SpawnBot("tim")
+    } else if input.KeyPress('`') {
+      scene.SpawnBot("tim2")
     }
-		if input.KeyPress('1') {
-      scene.SpawnotherBot("dave")
+    if player != nil {
+      speed := float32(5.0)
+      t := player.Transform()
+      var move engine.Vector = player.Transform().WorldPosition()
+      if input.KeyDown('W') {
+        t.SetRotationf(0.0)
+        move.Y += speed
+      }
+      if input.KeyDown('S') {
+        t.SetRotationf(180.0)
+        move.Y += -speed
+      }
+      if input.KeyDown('A') {
+        t.SetRotationf(90.0)
+        move.X += -speed
+      }
+      if input.KeyDown('D') {
+        t.SetRotationf(270.0)
+        move.X += speed
+      }
+      t.SetWorldPosition(move)
+
+      if input.MouseDown(input.MouseLeft) {
+        player.Shoot()
+      }
     }
   }
 }

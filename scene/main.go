@@ -49,7 +49,7 @@ func LoadTextures() {
 	botTexture, _ = engine.LoadTexture("./data/ship.png")
 }
 
-func SpawnBot(name string) {
+func SpawnBot(name string) *BotController {
 	Health := engine.NewGameObject("HP")
 	Health.Transform().SetParent2(MainSceneGeneral.Camera.GameObject())
 	Health.Transform().SetPositionf(-float32(engine.Width)/2+150, -float32(engine.Height)/2+50)
@@ -75,9 +75,9 @@ func SpawnBot(name string) {
 	HealthBarGUI.Transform().SetPositionf((uvHP.Ratio/2)*HealthBarGUI.Transform().Scale().X, 0)
 
   newPlayer := engine.NewGameObject(name)
-	newPlayer.AddComponent(engine.NewSprite(botTexture))
+  newPlayer.AddComponent(engine.NewPhysics(false))
+  newPlayer.AddComponent(engine.NewSprite(botTexture))
 	newPlayer.AddComponent(NewDestoyable(float32(500)))
-	newPlayer.Transform().SetParent2(MainSceneGeneral.Layer1)
 	newPlayer.Transform().SetWorldPositionf(50, 50)
 	newPlayer.Transform().SetScalef(50, 50)
 	newPlayer.Transform().SetParent2(MainSceneGeneral.Layer1)
@@ -86,20 +86,7 @@ func SpawnBot(name string) {
 	newPlayerController.HPBar = HealthBar
 	newPlayerController.Missle = missle
 
-  phx := newPlayer.AddComponent(engine.NewPhysics(false)).(*engine.Physics)
-  phx.Shape.SetFriction(0.5)
-  phx.Shape.SetElasticity(0.5)
-}
-
-func SpawnotherBot(name string) {
-  newPlayer := engine.NewGameObject(name)
-	newPlayer.AddComponent(engine.NewSprite(botTexture))
-  newPlayer.AddComponent(engine.NewPhysics(false))
-	newPlayer.AddComponent(NewDestoyable(float32(500)))
-	newPlayer.Transform().SetParent2(MainSceneGeneral.Layer1)
-	newPlayer.Transform().SetWorldPositionf(25, 25)
-	newPlayer.Transform().SetScalef(50, 50)
-	newPlayer.Transform().SetParent2(MainSceneGeneral.Layer1)
+  return newPlayerController
 }
 
 func (s *MainScene) Load() {
