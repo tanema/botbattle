@@ -93,9 +93,7 @@ func SpawnBot(name string) *BotController {
 	HealthBarGUI.Transform().SetDepth(3)
 	HealthBarGUI.Transform().SetPositionf((uvHP.Ratio/2)*HealthBarGUI.Transform().Scale().X, 0)
 
-  newPlayerController = newPlayer.AddComponent(NewBotController()).(*BotController)
-	newPlayerController.HPBar = HealthBar
-	newPlayerController.Missle = missle
+  newPlayerController = newPlayer.AddComponent(NewBotController(name, Health, HealthBar, missle)).(*BotController)
   Players[name] = newPlayerController
 	Health.Transform().SetPositionf(-float32(engine.Width)/2+150, -float32(engine.Height)/2+(50*float32(len(Players))))
 

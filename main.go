@@ -3,10 +3,16 @@ package main
 import (
   "flag"
   "runtime"
+  "math"
 	"github.com/vova616/GarageEngine/engine"
 	"github.com/vova616/GarageEngine/engine/input"
   "github.com/tanema/botbattle/scene"
   "github.com/tanema/botbattle/server"
+)
+
+const (
+  rotSpeed = float32(250.0)
+  RadianConst = math.Pi / 180
 )
 
 func main() {
@@ -31,25 +37,29 @@ func main() {
       scene.SpawnBot("tim2")
     }
     if player != nil {
-      speed := float32(5.0)
+      speed := float64(0.0)
       t := player.Transform()
-      var move engine.Vector = player.Transform().WorldPosition()
+
       if input.KeyDown('W') {
-        t.SetRotationf(0.0)
-        move.Y += speed
+        speed = 5.0
       }
       if input.KeyDown('S') {
-        t.SetRotationf(180.0)
-        move.Y += -speed
+        speed = -5.0
+      }
+
+      rot := player.Transform().Rotation()
+	    delta := float32(engine.DeltaTime())
+      if input.KeyDown('D') {
+        t.SetRotationf(rot.Z - rotSpeed*delta)
       }
       if input.KeyDown('A') {
-        t.SetRotationf(90.0)
-        move.X += -speed
+        t.SetRotationf(rot.Z + rotSpeed*delta)
       }
-      if input.KeyDown('D') {
-        t.SetRotationf(270.0)
-        move.X += speed
-      }
+
+      rot = player.Transform().Rotation()
+      move := player.Transform().WorldPosition()
+      move.X = float32(-math.Sin(float64(rot.Z)*RadianConst)*speed + float64(move.X))
+      move.Y = float32(math.Cos(float64(rot.Z)*RadianConst)*speed + float64(move.Y))
       t.SetWorldPosition(move)
 
       if input.MouseDown(input.MouseLeft) {

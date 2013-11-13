@@ -9,14 +9,16 @@ import (
 
 type BotController struct {
 	engine.BaseComponent
+  Name                 string
 	Missle               *Missle
+	Health               *engine.GameObject
 	HPBar                *engine.GameObject
 	Destoyable           *Destoyable
 	lastShoot            time.Time
 }
 
-func NewBotController() *BotController {
-  return &BotController{engine.NewComponent(), nil, nil, nil, time.Now()}
+func NewBotController(name string, health, healthbar *engine.GameObject, missle *Missle) *BotController {
+  return &BotController{engine.NewComponent(), name, missle, health, healthbar, nil, time.Now()}
 }
 func (sp *BotController) Start() {
 	sp.Destoyable = sp.GameObject().ComponentTypeOf(sp.Destoyable).(*Destoyable)
@@ -52,7 +54,9 @@ func (sp *BotController) OnDie(byTimer bool) {
 		n.Physics.Shape.Group = 1
 		n.Physics.Shape.IsSensor = true
 	}
+  sp.Health.Destroy()
 	sp.GameObject().Destroy()
+  delete(Players, sp.Name)
 }
 
 func (sp *BotController) Shoot() {
