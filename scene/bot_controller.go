@@ -15,10 +15,11 @@ type BotController struct {
 	HPBar                *engine.GameObject
 	Destoyable           *Destoyable
 	lastShoot            time.Time
+  Speed                float64
 }
 
 func NewBotController(name string, health, healthbar *engine.GameObject, missle *Missle) *BotController {
-  return &BotController{engine.NewComponent(), name, missle, health, healthbar, nil, time.Now()}
+  return &BotController{engine.NewComponent(), name, missle, health, healthbar, nil, time.Now(), 0.0}
 }
 func (sp *BotController) Start() {
 	sp.Destoyable = sp.GameObject().ComponentTypeOf(sp.Destoyable).(*Destoyable)
@@ -92,4 +93,33 @@ func (sp *BotController) Shoot() {
 
     sp.lastShoot = time.Now().Add(time.Millisecond * 200)
 	}
+}
+
+const RadianConst = math.Pi / 180
+
+func (sp *BotController) Update() {
+  t := sp.Transform()
+  rot := t.Rotation()
+  move := t.WorldPosition()
+  move.X = float32(-math.Sin(float64(rot.Z)*RadianConst)*sp.Speed + float64(move.X))
+  move.Y = float32(math.Cos(float64(rot.Z)*RadianConst)*sp.Speed + float64(move.Y))
+  t.SetWorldPosition(move)
+  sp.Speed = 0.0
+}
+
+func (sp *BotController) Forward() {
+  sp.Speed = 5.0
+}
+
+func (sp *BotController) Backward() {
+  sp.Speed = -5.0
+}
+
+func (sp *BotController) RotateTo(rot float32) {
+  sp.Transform().SetRotationf(rot)
+}
+
+func (sp *BotController) Rotate(deg float32) {
+  rot := sp.Transform().Rotation()
+  sp.Transform().SetRotationf(rot.Z + deg)
 }
