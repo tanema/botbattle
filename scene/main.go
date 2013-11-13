@@ -85,13 +85,6 @@ func SpawnBot(name string, conn *net.Conn) *BotController {
 	Health := engine.NewGameObject("HP")
 	Health.Transform().SetParent2(MainSceneGeneral.Camera.GameObject())
 
-	Name := engine.NewGameObject("Name")
-	Name.Transform().SetParent2(Health)
-	Name.AddComponent(components.NewUIText(ArialFont, name))
-	Name.Transform().SetDepth(10)
-	Name.Transform().SetPositionf(0, 0)
-	Name.Transform().SetScalef(20, 20)
-
 	HealthGUI := engine.NewGameObject("HPGUI")
 	HealthGUI.AddComponent(engine.NewSprite2(atlas.Texture, engine.IndexUV(atlas, HPGUI_A)))
 	HealthGUI.Transform().SetParent2(Health)
@@ -111,6 +104,13 @@ func SpawnBot(name string, conn *net.Conn) *BotController {
 	HealthBarGUI.Transform().SetScalef(0.52, 1)
 	HealthBarGUI.Transform().SetDepth(3)
 	HealthBarGUI.Transform().SetPositionf((uvHP.Ratio/2)*HealthBarGUI.Transform().Scale().X, 0)
+
+	Name := engine.NewGameObject("Name")
+	Name.AddComponent(components.NewUIText(ArialFont, name))
+	Name.Transform().SetParent2(Health)
+	Name.Transform().SetDepth(5)
+	Name.Transform().SetPositionf(0, 1)
+	Name.Transform().SetScalef(20, 20)
 
   newPlayerController = newPlayer.AddComponent(NewBotController(name, conn, Health, HealthBar, missle, scanner)).(*BotController)
   Players[name] = newPlayerController

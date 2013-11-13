@@ -21,7 +21,6 @@ func (ms *Missle) OnComponentAdd() {
 }
 
 func (ms *Missle) OnHit(enemey *engine.GameObject, damager *DamageDealer) {
-
 }
 
 func (ms *Missle) OnDie(byTimer bool) {
