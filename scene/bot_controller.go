@@ -16,10 +16,11 @@ type BotController struct {
 	Destoyable           *Destoyable
 	lastShoot            time.Time
   Speed                float64
+  Scanner              *Scanner
 }
 
-func NewBotController(name string, health, healthbar *engine.GameObject, missle *Missle) *BotController {
-  return &BotController{engine.NewComponent(), name, missle, health, healthbar, nil, time.Now(), 0.0}
+func NewBotController(name string, health, healthbar *engine.GameObject, missle *Missle, scanner *Scanner) *BotController {
+  return &BotController{engine.NewComponent(), name, missle, health, healthbar, nil, time.Now(), 0.0, scanner}
 }
 func (sp *BotController) Start() {
 	sp.Destoyable = sp.GameObject().ComponentTypeOf(sp.Destoyable).(*Destoyable)
@@ -61,7 +62,7 @@ func (sp *BotController) OnDie(byTimer bool) {
 }
 
 func (sp *BotController) Shoot() {
-	if sp.Missle != nil && time.Now().After(sp.lastShoot) {
+	if time.Now().After(sp.lastShoot) {
 		a := sp.Transform().Rotation()
 
     pos := engine.Vector{0, 37, 0}
@@ -93,6 +94,37 @@ func (sp *BotController) Shoot() {
 
     sp.lastShoot = time.Now().Add(time.Millisecond * 200)
 	}
+}
+
+func (sp *BotController) Scan() {
+  a := sp.Transform().Rotation()
+
+  pos := engine.Vector{0, 37, 0}
+  s := sp.Transform().DirectionTransform(engine.Vector{0,1,0})
+
+  p := sp.Transform().WorldPosition()
+  m := engine.Identity()
+  m.Translate(pos.X, pos.Y, pos.Z)
+  m.RotateZ(a.Z, -1)
+  m.Translate(p.X, p.Y, p.Z)
+  p = m.Translation()
+
+  nfire := sp.Scanner.GameObject().Clone()
+  nfire.Tag = sp.Name
+  nfire.Transform().SetParent2(MainSceneGeneral.Layer1)
+  nfire.Transform().SetWorldPosition(p)
+  nfire.Physics.Body.IgnoreGravity = true
+  nfire.Physics.Body.SetMass(0.1)
+
+  v := sp.GameObject().Physics.Body.Velocity()
+  angle := float32(math.Atan2(float64(s.X), float64(s.Y))) * engine.DegreeConst
+
+  nfire.Physics.Body.SetVelocity(float32(v.X), float32(v.Y))
+  nfire.Physics.Body.AddForce(s.X*10000, s.Y*10000)
+
+  nfire.Physics.Shape.Group = 1
+  nfire.Physics.Body.SetMoment(engine.Inf)
+  nfire.Transform().SetRotationf(180 - angle)
 }
 
 const RadianConst = math.Pi / 180

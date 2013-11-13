@@ -20,16 +20,18 @@ var (
 	backgroundTexture *engine.Texture
   wallTexture       *engine.Texture
 	botTexture        *engine.Texture
+	missleTexture     *engine.Texture
+	scannerTexture    *engine.Texture
 	ArialFont         *engine.Font
   Explosion_ID      engine.ID
 	missle            *Missle
+	scanner           *Scanner
 	Explosion         *engine.GameObject
   Players           map[string]*BotController
 )
 
 const (
 	MissleTag = "Missle"
-  Missle_A = 334
   HP_A = 123
   HPGUI_A = 124
 )
@@ -41,9 +43,10 @@ func LoadTextures() {
 	backgroundTexture, _ = engine.LoadTexture("./data/background.png")
 	botTexture, _ = engine.LoadTexture("./data/ship.png")
   wallTexture, _ = engine.LoadTexture("./data/wall.png")
+  missleTexture, _ = engine.LoadTexture("./data/missile.png")
+  scannerTexture, _ = engine.LoadTexture("./data/scanner.png")
 
 	atlas = engine.NewManagedAtlas(2048, 1024)
-	atlas.LoadImageID("./data/missile.png", Missle_A)
 	_, Explosion_ID = atlas.LoadGroupSheet("./data/Explosion.png", 128, 128, 6*8)
 	atlas.LoadImageID("./data/HealthBar.png", HP_A)
 	atlas.LoadImageID("./data/HealthBarGUI.png", HPGUI_A)
@@ -101,7 +104,7 @@ func SpawnBot(name string) *BotController {
 	HealthBarGUI.Transform().SetDepth(3)
 	HealthBarGUI.Transform().SetPositionf((uvHP.Ratio/2)*HealthBarGUI.Transform().Scale().X, 0)
 
-  newPlayerController = newPlayer.AddComponent(NewBotController(name, Health, HealthBar, missle)).(*BotController)
+  newPlayerController = newPlayer.AddComponent(NewBotController(name, Health, HealthBar, missle, scanner)).(*BotController)
   Players[name] = newPlayerController
 	Health.Transform().SetPositionf(-float32(engine.Width)/2+150, -float32(engine.Height)/2+(50*float32(len(Players))))
 
@@ -151,7 +154,7 @@ func (s *MainScene) Load() {
 	Explosion.Transform().SetDepth(1)
 
 	missleGameObject := engine.NewGameObject("Missle")
-	missleGameObject.AddComponent(engine.NewSprite2(atlas.Texture, engine.IndexUV(atlas, Missle_A)))
+	missleGameObject.AddComponent(engine.NewSprite(missleTexture))
 	missleGameObject.AddComponent(engine.NewPhysics(false))
 	missleGameObject.Transform().SetScalef(20, 20)
 	missleGameObject.AddComponent(NewDamageDealer(50))
@@ -163,15 +166,25 @@ func (s *MainScene) Load() {
 	ds.SetDestroyTime(1)
 	missleGameObject.AddComponent(ds)
 
+	scannerGameObject := engine.NewGameObject("Scanner")
+	scannerGameObject.AddComponent(engine.NewSprite(scannerTexture))
+	scannerGameObject.AddComponent(engine.NewPhysics(false))
+	scannerGameObject.Transform().SetScalef(20, 20)
+	scannerGameObject.Physics.Shape.IsSensor = true
+  scanner = NewScanner()
+	scannerGameObject.AddComponent(scanner)
+	ds = NewDestoyable(0)
+	ds.SetDestroyTime(1)
+	scannerGameObject.AddComponent(ds)
+
 	//SPACCCEEEEE
 	engine.Space.Gravity.Y = 0
 	engine.Space.Iterations = 10
 
-	wall := engine.NewGameObject("Cookie")
+	wall := engine.NewGameObject("wall")
 	wall.AddComponent(engine.NewSprite(wallTexture))
 	wall.AddComponent(NewDestoyable(float32(engine.Inf)))
 	wall.Transform().SetScalef(100, 100)
-	//wall.AddComponent(engine.NewPhysics(true))
   wall.AddComponent(engine.NewPhysicsShape(true, chipmunk.NewBox(vect.Vect{0, 0}, 100, 100)))
 	wall.Physics.Shape.SetElasticity(0)
 	wall.Physics.Body.SetMass(10000000)

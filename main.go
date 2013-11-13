@@ -48,6 +48,9 @@ func main() {
       if input.KeyDown(' ') {
         player.Shoot()
       }
+      if input.KeyDown('E') {
+        player.Scan()
+      }
     }
   }
 }
