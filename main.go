@@ -27,14 +27,17 @@ func main() {
   game_server := server.NewServer(host)
   go game_server.Listen()
 	for engine.MainLoop() {
-		if input.KeyPress('`') && player == nil {
-      player = scene.SpawnBot("tim")
+		if input.KeyPress('`') && (player == nil || player.GameObject() == nil) {
+      player = scene.SpawnBot("tim", nil)
     } else if input.KeyPress('`') {
-      scene.SpawnBot("tim2")
+      scene.SpawnBot("tim2", nil)
     }
-    if player != nil {
+    if player != nil && player.GameObject() != nil {
       if input.KeyDown('W') {
         player.Forward()
+      }
+      if input.KeyDown('Q') {
+        player.Stop()
       }
       if input.KeyDown('S') {
         player.Backward()
@@ -50,6 +53,9 @@ func main() {
       }
       if input.KeyDown('E') {
         player.Scan()
+      }
+      if input.KeyDown('G') {
+        player.OnDie(false)
       }
     }
   }

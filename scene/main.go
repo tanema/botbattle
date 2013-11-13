@@ -5,6 +5,9 @@ import (
 	"github.com/vova616/GarageEngine/engine/components"
 	"github.com/vova616/chipmunk"
 	"github.com/vova616/chipmunk/vect"
+  "time"
+  "math/rand"
+  "net"
 	"strconv"
   "fmt"
 )
@@ -56,7 +59,12 @@ func LoadTextures() {
 	atlas.Texture.SetReadOnly()
 }
 
-func SpawnBot(name string) *BotController {
+func random(min, max int) int {
+  rand.Seed(time.Now().Unix())
+  return rand.Intn(max - min) + min
+}
+
+func SpawnBot(name string, conn *net.Conn) *BotController {
 	newPlayerController, exists := Players[name]
 	if exists {
     newPlayerController.OnDie(false)
@@ -65,7 +73,7 @@ func SpawnBot(name string) *BotController {
   newPlayer.AddComponent(engine.NewPhysics(false))
   newPlayer.AddComponent(engine.NewSprite(botTexture))
 	newPlayer.AddComponent(NewDestoyable(float32(500)))
-	newPlayer.Transform().SetWorldPositionf(50, 50)
+	newPlayer.Transform().SetWorldPositionf(float32(random(-500, 500)), float32(random(-300, 300)))
 	newPlayer.Transform().SetScalef(50, 50)
 	newPlayer.Transform().SetParent2(MainSceneGeneral.Layer1)
 	newPlayer.Physics.Shape.SetElasticity(0)
@@ -104,11 +112,19 @@ func SpawnBot(name string) *BotController {
 	HealthBarGUI.Transform().SetDepth(3)
 	HealthBarGUI.Transform().SetPositionf((uvHP.Ratio/2)*HealthBarGUI.Transform().Scale().X, 0)
 
-  newPlayerController = newPlayer.AddComponent(NewBotController(name, Health, HealthBar, missle, scanner)).(*BotController)
+  newPlayerController = newPlayer.AddComponent(NewBotController(name, conn, Health, HealthBar, missle, scanner)).(*BotController)
   Players[name] = newPlayerController
-	Health.Transform().SetPositionf(-float32(engine.Width)/2+150, -float32(engine.Height)/2+(50*float32(len(Players))))
+  reorderHealthBars()
 
   return Players[name]
+}
+
+func reorderHealthBars(){
+  i := 0
+  for _, v := range Players {
+    i++
+	  v.Health.Transform().SetPositionf(-float32(engine.Width)/2+110, -float32(engine.Height)/2+(40*float32(i)))
+  }
 }
 
 func (s *MainScene) Load() {
@@ -157,7 +173,7 @@ func (s *MainScene) Load() {
 	missleGameObject.AddComponent(engine.NewSprite(missleTexture))
 	missleGameObject.AddComponent(engine.NewPhysics(false))
 	missleGameObject.Transform().SetScalef(20, 20)
-	missleGameObject.AddComponent(NewDamageDealer(50))
+	missleGameObject.AddComponent(NewDamageDealer(250))
 	missleGameObject.Physics.Shape.IsSensor = true
 	missle = NewMissle(30000)
 	missleGameObject.AddComponent(missle)

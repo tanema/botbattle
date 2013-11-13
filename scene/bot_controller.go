@@ -2,6 +2,8 @@ package scene
 
 import (
 	"github.com/vova616/GarageEngine/engine"
+  "fmt"
+  "net"
 	"math"
 	"math/rand"
   "time"
@@ -10,6 +12,7 @@ import (
 type BotController struct {
 	engine.BaseComponent
   Name                 string
+  Conn                 *net.Conn
 	Missle               *Missle
 	Health               *engine.GameObject
 	HPBar                *engine.GameObject
@@ -19,9 +22,12 @@ type BotController struct {
   Scanner              *Scanner
 }
 
-func NewBotController(name string, health, healthbar *engine.GameObject, missle *Missle, scanner *Scanner) *BotController {
-  return &BotController{engine.NewComponent(), name, missle, health, healthbar, nil, time.Now(), 0.0, scanner}
+const RadianConst = math.Pi / 180
+
+func NewBotController(name string, conn *net.Conn, health, healthbar *engine.GameObject, missle *Missle, scanner *Scanner) *BotController {
+  return &BotController{engine.NewComponent(), name, conn, missle, health, healthbar, nil, time.Now(), 0.0, scanner}
 }
+
 func (sp *BotController) Start() {
 	sp.Destoyable = sp.GameObject().ComponentTypeOf(sp.Destoyable).(*Destoyable)
 }
@@ -59,6 +65,16 @@ func (sp *BotController) OnDie(byTimer bool) {
   sp.Health.Destroy()
 	sp.GameObject().Destroy()
   delete(Players, sp.Name)
+  reorderHealthBars()
+}
+
+func (sp *BotController) Update() {
+  t := sp.Transform()
+  rot := t.Rotation()
+  move := t.WorldPosition()
+  move.X = float32(-math.Sin(float64(rot.Z)*RadianConst)*sp.Speed + float64(move.X))
+  move.Y = float32(math.Cos(float64(rot.Z)*RadianConst)*sp.Speed + float64(move.Y))
+  t.SetWorldPosition(move)
 }
 
 func (sp *BotController) Shoot() {
@@ -127,15 +143,11 @@ func (sp *BotController) Scan() {
   nfire.Transform().SetRotationf(180 - angle)
 }
 
-const RadianConst = math.Pi / 180
+func (sp *BotController) OnScan(name string, pos engine.Vector) {
+  fmt.Println(name, pos)
+}
 
-func (sp *BotController) Update() {
-  t := sp.Transform()
-  rot := t.Rotation()
-  move := t.WorldPosition()
-  move.X = float32(-math.Sin(float64(rot.Z)*RadianConst)*sp.Speed + float64(move.X))
-  move.Y = float32(math.Cos(float64(rot.Z)*RadianConst)*sp.Speed + float64(move.Y))
-  t.SetWorldPosition(move)
+func (sp *BotController) Stop() {
   sp.Speed = 0.0
 }
 
@@ -154,4 +166,8 @@ func (sp *BotController) RotateTo(rot float32) {
 func (sp *BotController) Rotate(deg float32) {
   rot := sp.Transform().Rotation()
   sp.Transform().SetRotationf(rot.Z + deg)
+}
+
+func (sp *BotController) GetCurrentPosition() engine.Vector {
+  return sp.Transform().WorldPosition()
 }
