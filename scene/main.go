@@ -174,7 +174,7 @@ func (s *MainScene) Load() {
 	//wall.AddComponent(engine.NewPhysics(true))
   wall.AddComponent(engine.NewPhysicsShape(true, chipmunk.NewBox(vect.Vect{0, 0}, 100, 100)))
 	wall.Physics.Shape.SetElasticity(0)
-	wall.Physics.Body.SetMass(99999999999999999999999999)
+	wall.Physics.Body.SetMass(10000000)
 	wall.Physics.Body.SetMoment(engine.Inf)
 
   Wall := engine.NewGameObject("Wall")
