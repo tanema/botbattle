@@ -3,6 +3,8 @@ package scene
 import (
 	"github.com/vova616/GarageEngine/engine"
 	"github.com/vova616/GarageEngine/engine/components"
+	"github.com/vova616/chipmunk"
+	"github.com/vova616/chipmunk/vect"
 	"strconv"
   "fmt"
 )
@@ -16,6 +18,7 @@ var (
 	MainSceneGeneral  *MainScene
 	atlas             *engine.ManagedAtlas
 	backgroundTexture *engine.Texture
+  wallTexture       *engine.Texture
 	botTexture        *engine.Texture
 	ArialFont         *engine.Font
   Explosion_ID      engine.ID
@@ -36,6 +39,8 @@ func LoadTextures() {
 	ArialFont.Texture.SetReadOnly()
 
 	backgroundTexture, _ = engine.LoadTexture("./data/background.png")
+	botTexture, _ = engine.LoadTexture("./data/ship.png")
+  wallTexture, _ = engine.LoadTexture("./data/wall.png")
 
 	atlas = engine.NewManagedAtlas(2048, 1024)
 	atlas.LoadImageID("./data/missile.png", Missle_A)
@@ -46,8 +51,6 @@ func LoadTextures() {
 	atlas.BuildMipmaps()
 	atlas.SetFiltering(engine.MipMapLinearNearest, engine.Nearest)
 	atlas.Texture.SetReadOnly()
-
-	botTexture, _ = engine.LoadTexture("./data/ship.png")
 }
 
 func SpawnBot(name string) *BotController {
@@ -62,6 +65,11 @@ func SpawnBot(name string) *BotController {
 	newPlayer.Transform().SetWorldPositionf(50, 50)
 	newPlayer.Transform().SetScalef(50, 50)
 	newPlayer.Transform().SetParent2(MainSceneGeneral.Layer1)
+	newPlayer.Physics.Shape.SetElasticity(0)
+	newPlayer.Physics.Shape.SetFriction(1)
+	newPlayer.Physics.Body.SetMass(100)
+	newPlayer.Physics.Body.IgnoreGravity = true
+	newPlayer.Physics.Body.SetMoment(engine.Inf)
 
 	Health := engine.NewGameObject("HP")
 	Health.Transform().SetParent2(MainSceneGeneral.Camera.GameObject())
@@ -159,10 +167,38 @@ func (s *MainScene) Load() {
 	engine.Space.Gravity.Y = 0
 	engine.Space.Iterations = 10
 
-	s.Layer1 = engine.NewGameObject("Layer1")
+	wall := engine.NewGameObject("Cookie")
+	wall.AddComponent(engine.NewSprite(wallTexture))
+	wall.AddComponent(NewDestoyable(float32(engine.Inf)))
+	wall.Transform().SetScalef(100, 100)
+	//wall.AddComponent(engine.NewPhysics(true))
+  wall.AddComponent(engine.NewPhysicsShape(true, chipmunk.NewBox(vect.Vect{0, 0}, 100, 100)))
+	wall.Physics.Shape.SetElasticity(0)
+	wall.Physics.Body.SetMass(99999999999999999999999999)
+	wall.Physics.Body.SetMoment(engine.Inf)
 
+  Wall := engine.NewGameObject("Wall")
+	for i := -9; i < 9; i++ {
+		c := wall.Clone()
+		c.Transform().SetParent2(Wall)
+	  c.Transform().SetPositionf(float32(i)*80, 400)
+		c = wall.Clone()
+		c.Transform().SetParent2(Wall)
+	  c.Transform().SetPositionf(float32(i)*80, -400)
+	}
+	for i := -6; i < 6; i++ {
+		c := wall.Clone()
+		c.Transform().SetParent2(Wall)
+	  c.Transform().SetPositionf(680, float32(i)*80)
+		c = wall.Clone()
+		c.Transform().SetParent2(Wall)
+	  c.Transform().SetPositionf(-680, float32(i)*80)
+	}
+
+	s.Layer1 = engine.NewGameObject("Layer1")
 	s.AddGameObject(cam)
 	s.AddGameObject(s.Layer1)
+	s.AddGameObject(Wall)
 	s.AddGameObject(background)
 
 	MainSceneGeneral = s
