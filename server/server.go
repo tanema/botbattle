@@ -1,6 +1,7 @@
 package server
 
 import (
+  "github.com/tanema/botbattle/scene"
   "fmt"
   "net"
   "bufio"
@@ -31,13 +32,12 @@ func (s *server) Listen(){
 
 func (s *server) handleMessages(conn net.Conn, message string) {
   bits := strings.SplitN(message, " ", 3)
-  if len(bits) != 3 {
-    fmt.Printf("Error: invalid line: %v\n", bits)
+  switch bits[0] {
+  case "SET_NAME":
+    scene.SpawnBot(bits[1], conn)
   }
-  _, err := conn.Write([]byte("put_message_id_here" + " " + "response_goes_here" + "\n"))
-  if err != nil {
-    fmt.Printf("error writing out to connection: %s \n", err)
-  }
+  //_, err := conn.Write([]byte("put_message_id_here" + " " + "response_goes_here" + "\n"))
+  //if err != nil { fmt.Printf("error writing out to connection: %s \n", err) }
 }
 
 func (s *server) handlePeer(conn net.Conn){

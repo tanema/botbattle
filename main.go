@@ -27,6 +27,8 @@ func main() {
   game_server := server.NewServer(host)
   go game_server.Listen()
 	for engine.MainLoop() {
+    scene.ReorderHealthBars()
+
 		if input.KeyPress('`') && (player == nil || player.GameObject() == nil) {
       player = scene.SpawnBot("tim", nil)
     } else if input.KeyPress('`') {

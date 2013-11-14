@@ -64,7 +64,7 @@ func random(min, max int) int {
   return rand.Intn(max - min) + min
 }
 
-func SpawnBot(name string, conn *net.Conn) *BotController {
+func SpawnBot(name string, conn net.Conn) *BotController {
 	newPlayerController, exists := Players[name]
 	if exists {
     newPlayerController.OnDie(false)
@@ -105,24 +105,24 @@ func SpawnBot(name string, conn *net.Conn) *BotController {
 	HealthBarGUI.Transform().SetDepth(3)
 	HealthBarGUI.Transform().SetPositionf((uvHP.Ratio/2)*HealthBarGUI.Transform().Scale().X, 0)
 
-	Name := engine.NewGameObject("Name")
-	Name.AddComponent(components.NewUIText(ArialFont, name))
-	Name.Transform().SetParent2(Health)
-	Name.Transform().SetDepth(5)
-	Name.Transform().SetPositionf(0, 1)
-	Name.Transform().SetScalef(20, 20)
-
   newPlayerController = newPlayer.AddComponent(NewBotController(name, conn, Health, HealthBar, missle, scanner)).(*BotController)
   Players[name] = newPlayerController
-  reorderHealthBars()
 
   return Players[name]
 }
 
-func reorderHealthBars(){
+func ReorderHealthBars(){
   i := 0
-  for _, v := range Players {
+  for k, v := range Players {
     i++
+    if v.NameObject == nil {
+      v.NameObject = engine.NewGameObject("Name")
+      v.NameObject.AddComponent(components.NewUIText(ArialFont, k))
+      v.NameObject.Transform().SetParent2(v.Health)
+      v.NameObject.Transform().SetDepth(5)
+      v.NameObject.Transform().SetPositionf(0, 1)
+      v.NameObject.Transform().SetScalef(20, 20)
+    }
 	  v.Health.Transform().SetPositionf(-float32(engine.Width)/2+110, -float32(engine.Height)/2+(40*float32(i)))
   }
 }

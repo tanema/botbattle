@@ -13,8 +13,9 @@ import (
 type BotController struct {
 	engine.BaseComponent
   Name                 string
-  Conn                 *net.Conn
+  Conn                 net.Conn
 	Missle               *Missle
+	NameObject           *engine.GameObject
 	Health               *engine.GameObject
 	HPBar                *engine.GameObject
 	Destoyable           *Destoyable
@@ -27,9 +28,9 @@ type BotController struct {
 const RadianConst = math.Pi / 180
 var group chipmunk.Group = 0
 
-func NewBotController(name string, conn *net.Conn, health, healthbar *engine.GameObject, missle *Missle, scanner *Scanner) *BotController {
+func NewBotController(name string, conn net.Conn, health, healthbar *engine.GameObject, missle *Missle, scanner *Scanner) *BotController {
   group += 1
-  return &BotController{engine.NewComponent(), name, conn, missle, health, healthbar, nil, time.Now(), 0.0, scanner, group}
+  return &BotController{engine.NewComponent(), name, conn, missle, nil, health, healthbar, nil, time.Now(), 0.0, scanner, group}
 }
 
 func (sp *BotController) Start() {
@@ -70,7 +71,6 @@ func (sp *BotController) OnDie(byTimer bool) {
   sp.Health.Destroy()
 	sp.GameObject().Destroy()
   delete(Players, sp.Name)
-  reorderHealthBars()
 }
 
 func (sp *BotController) Update() {
