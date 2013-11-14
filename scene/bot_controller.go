@@ -3,8 +3,6 @@ package scene
 import (
 	"github.com/vova616/GarageEngine/engine"
 	"github.com/vova616/chipmunk"
-  "fmt"
-  "net"
 	"math"
 	"math/rand"
   "time"
@@ -13,7 +11,7 @@ import (
 type BotController struct {
 	engine.BaseComponent
   Name                 string
-  Conn                 net.Conn
+  Peer                 *Peer
 	Missle               *Missle
 	NameObject           *engine.GameObject
 	Health               *engine.GameObject
@@ -28,9 +26,9 @@ type BotController struct {
 const RadianConst = math.Pi / 180
 var group chipmunk.Group = 0
 
-func NewBotController(name string, conn net.Conn, health, healthbar *engine.GameObject, missle *Missle, scanner *Scanner) *BotController {
+func NewBotController(name string, peer *Peer, health, healthbar *engine.GameObject, missle *Missle, scanner *Scanner) *BotController {
   group += 1
-  return &BotController{engine.NewComponent(), name, conn, missle, nil, health, healthbar, nil, time.Now(), 0.0, scanner, group}
+  return &BotController{engine.NewComponent(), name, peer, missle, nil, health, healthbar, nil, time.Now(), 0.0, scanner, group}
 }
 
 func (sp *BotController) Start() {
@@ -69,6 +67,9 @@ func (sp *BotController) OnDie(byTimer bool) {
 		n.Physics.Shape.IsSensor = true
 	}
   sp.Health.Destroy()
+  if sp.Peer != nil {
+    sp.Peer.OnDie()
+  }
 	sp.GameObject().Destroy()
   delete(Players, sp.Name)
 }
@@ -149,7 +150,9 @@ func (sp *BotController) Scan() {
 }
 
 func (sp *BotController) OnScan(name string, pos engine.Vector) {
-  fmt.Println(name, pos)
+  if sp.Peer != nil {
+    sp.Peer.OnScan(pos.X, pos.Y, name)
+  }
 }
 
 func (sp *BotController) Stop() {
@@ -173,6 +176,9 @@ func (sp *BotController) Rotate(deg float32) {
   sp.Transform().SetRotationf(rot.Z + deg)
 }
 
-func (sp *BotController) GetCurrentPosition() engine.Vector {
-  return sp.Transform().WorldPosition()
+func (sp *BotController) GetCurrentPosition() {
+  pos := sp.Transform().WorldPosition()
+  if sp.Peer != nil {
+    sp.Peer.OnCurrentPostition(pos.X, pos.Y)
+  }
 }

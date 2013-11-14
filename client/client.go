@@ -4,42 +4,70 @@ import (
   "bufio"
   "fmt"
   "net"
-  "strconv"
   "time"
 )
 
 type Client struct {
   host string
-  ident string
   conn net.Conn
+  events chan string
 }
 
-func NewClient(host string, events chan string) Client {
-  fmt.Printf("connecting to %s \n", host)
+func NewClient(host, name string, events chan string) Client {
   conn, _ := net.Dial("tcp", host)
   go handleMessage(events, conn)
-  return Client{host, strconv.FormatInt(time.Now().Unix(), 10), conn}
+  conn.Write([]byte("REGISTER " + name + "\n"))
+  return Client{host, conn, events}
 }
 
 func (c *Client) sendMessage(cmd, arguments string) {
   _, err := c.conn.Write([]byte(cmd + " " + arguments + "\n"))
   if err != nil {
-    fmt.Printf("error writing out to connection: %s \n", err)
+    c.events <- "DISCONNECT"
+    return
   }
+  time.Sleep(time.Millisecond)
 }
 
 func handleMessage(events chan string, conn net.Conn){
   for {
     line, err := bufio.NewReader(conn).ReadString('\n')
     if err != nil {
-      events <- "disconnect"
-      println("disconnected")
+      events <- "DISCONNECT"
       return
     }
     events <- line
   }
 }
 
-func (c *Client) SetName(name string) {
-  c.sendMessage("SET_NAME", name)
+func (c *Client) Forward() {
+  c.sendMessage("FORWARD", "")
+}
+
+func (c *Client) Backward() {
+  c.sendMessage("BACKWARD", "")
+}
+
+func (c *Client) Stop() {
+  c.sendMessage("STOP", "")
+}
+
+func (c *Client) Shoot() {
+  c.sendMessage("SHOOT", "")
+}
+
+func (c *Client) Scan() {
+  c.sendMessage("SCAN", "")
+}
+
+func (c *Client) Rotate(deg float32) {
+  c.sendMessage("ROTATE", fmt.Sprintf("%f", deg))
+}
+
+func (c *Client) RotateTo(deg float32) {
+  c.sendMessage("ROTATE_TO", fmt.Sprintf("%f", deg))
+}
+
+func (c *Client) GetCurrentPosition() {
+  c.sendMessage("CURRENT_POS", "")
 }

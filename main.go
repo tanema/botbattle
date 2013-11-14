@@ -6,7 +6,6 @@ import (
 	"github.com/vova616/GarageEngine/engine"
 	"github.com/vova616/GarageEngine/engine/input"
   "github.com/tanema/botbattle/scene"
-  "github.com/tanema/botbattle/server"
 )
 
 const rotSpeed = float32(250.0)
@@ -24,7 +23,7 @@ func main() {
   flag.StringVar(&host, "h", "localhost:4569", "Your localhost that you are listening on")
   flag.Parse()
 
-  game_server := server.NewServer(host)
+  game_server := scene.NewServer(host)
   go game_server.Listen()
 	for engine.MainLoop() {
     scene.ReorderHealthBars()

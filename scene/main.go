@@ -7,7 +7,6 @@ import (
 	"github.com/vova616/chipmunk/vect"
   "time"
   "math/rand"
-  "net"
 	"strconv"
   "fmt"
 )
@@ -64,7 +63,7 @@ func random(min, max int) int {
   return rand.Intn(max - min) + min
 }
 
-func SpawnBot(name string, conn net.Conn) *BotController {
+func SpawnBot(name string, peer *Peer) *BotController {
 	newPlayerController, exists := Players[name]
 	if exists {
     newPlayerController.OnDie(false)
@@ -105,7 +104,7 @@ func SpawnBot(name string, conn net.Conn) *BotController {
 	HealthBarGUI.Transform().SetDepth(3)
 	HealthBarGUI.Transform().SetPositionf((uvHP.Ratio/2)*HealthBarGUI.Transform().Scale().X, 0)
 
-  newPlayerController = newPlayer.AddComponent(NewBotController(name, conn, Health, HealthBar, missle, scanner)).(*BotController)
+  newPlayerController = newPlayer.AddComponent(NewBotController(name, peer, Health, HealthBar, missle, scanner)).(*BotController)
   Players[name] = newPlayerController
 
   return Players[name]
