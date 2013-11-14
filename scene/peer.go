@@ -63,6 +63,7 @@ func(p *Peer) onPlayer(with_player cb){
 }
 
 func (p *Peer) OnScan(x, y float32, object string){
+  fmt.Println(object)
   p.sendMessage("ON_SCAN", fmt.Sprintf("%g:%g:%s", x, y, object))
 }
 

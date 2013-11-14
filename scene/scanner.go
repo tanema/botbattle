@@ -17,8 +17,9 @@ func (ms *Scanner) OnComponentAdd() {
 }
 
 func (ms *Scanner) OnHit(enemy *engine.GameObject, damager *DamageDealer) {
-  player, exists := Players[ms.GameObject().Tag]
-  if exists {
+  player, player_exists := Players[ms.GameObject().Tag]
+  _, enemy_exists := Players[enemy.Name()]
+  if player_exists && enemy_exists {
     player.OnScan(enemy.Name(), enemy.Transform().WorldPosition())
   }
 }
