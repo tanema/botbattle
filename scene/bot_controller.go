@@ -2,7 +2,6 @@ package scene
 
 import (
 	"github.com/vova616/GarageEngine/engine"
-	"github.com/vova616/chipmunk"
 	"math"
 	"math/rand"
   "time"
@@ -20,19 +19,15 @@ type BotController struct {
 	lastShoot            time.Time
   Speed                float64
   Scanner              *Scanner
-  Group                chipmunk.Group
 }
 
 const RadianConst = math.Pi / 180
-var group chipmunk.Group = 0
 
 func NewBotController(name string, peer *Peer, health, healthbar *engine.GameObject, missle *Missle, scanner *Scanner) *BotController {
-  group += 1
-  return &BotController{engine.NewComponent(), name, peer, missle, nil, health, healthbar, nil, time.Now(), 0.0, scanner, group}
+  return &BotController{engine.NewComponent(), name, peer, missle, nil, health, healthbar, nil, time.Now(), 0.0, scanner}
 }
 
 func (sp *BotController) Start() {
-  sp.GameObject().Physics.Shape.Group = sp.Group
 	sp.Destoyable = sp.GameObject().ComponentTypeOf(sp.Destoyable).(*Destoyable)
 }
 
@@ -63,7 +58,7 @@ func (sp *BotController) OnDie(byTimer bool) {
 		n.Physics.Body.SetVelocity(-rot.X*100, -rot.Y*100)
 
 		n.Physics.Body.SetMass(1)
-		n.Physics.Shape.Group = sp.Group
+		n.Physics.Shape.Group = 1
 		n.Physics.Shape.IsSensor = true
 	}
   sp.Health.Destroy()
@@ -87,7 +82,7 @@ func (sp *BotController) Shoot() {
 	if time.Now().After(sp.lastShoot) {
 		a := sp.Transform().Rotation()
 
-    pos := engine.Vector{0, 40, 0}
+    pos := engine.Vector{0, 45, 0}
     s := sp.Transform().DirectionTransform(engine.Vector{0,1,0})
 
     p := sp.Transform().WorldPosition()
@@ -110,7 +105,7 @@ func (sp *BotController) Shoot() {
     nfire.Physics.Body.SetVelocity(float32(v.X), float32(v.Y))
     nfire.Physics.Body.AddForce(s.X*10000, s.Y*10000)
 
-    nfire.Physics.Shape.Group = sp.Group
+    nfire.Physics.Shape.Group = 1
     nfire.Physics.Body.SetMoment(engine.Inf)
     nfire.Transform().SetRotationf(180 - angle)
 
@@ -121,7 +116,7 @@ func (sp *BotController) Shoot() {
 func (sp *BotController) Scan() {
   a := sp.Transform().Rotation()
 
-  pos := engine.Vector{0, 37, 0}
+  pos := engine.Vector{0, 45, 0}
   s := sp.Transform().DirectionTransform(engine.Vector{0,1,0})
 
   p := sp.Transform().WorldPosition()
@@ -144,7 +139,7 @@ func (sp *BotController) Scan() {
   nfire.Physics.Body.SetVelocity(float32(v.X), float32(v.Y))
   nfire.Physics.Body.AddForce(s.X*10000, s.Y*10000)
 
-  nfire.Physics.Shape.Group = sp.Group
+  nfire.Physics.Shape.Group = 1
   nfire.Physics.Body.SetMoment(engine.Inf)
   nfire.Transform().SetRotationf(180 - angle)
 }

@@ -24,6 +24,7 @@ func NewClient(host, name string) Client {
   conn, err := net.Dial("tcp", host)
   if err != nil {
     println("could not connect to that host")
+    fmt.Println(err)
     os.Exit(0)
   }
   scan_event := make(chan string)
