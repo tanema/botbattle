@@ -42,8 +42,10 @@ func LoadTextures() {
 	ArialFont, _ = engine.NewFont("./data/arial.ttf", 24)
 	ArialFont.Texture.SetReadOnly()
 
+  var err error
 	backgroundTexture, _ = engine.LoadTexture("./data/background.png")
-	botTexture, _ = engine.LoadTexture("./data/ship.png")
+	botTexture, err = engine.LoadTexture("./data/ship.png")
+  fmt.Println(err)
   wallTexture, _ = engine.LoadTexture("./data/wall.png")
   missleTexture, _ = engine.LoadTexture("./data/missile.png")
   scannerTexture, _ = engine.LoadTexture("./data/scanner.png")

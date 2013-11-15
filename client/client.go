@@ -1,6 +1,7 @@
 package client
 
 import (
+  "os"
   "bufio"
   "fmt"
   "net"
@@ -14,7 +15,12 @@ type Client struct {
 }
 
 func NewClient(host, name string, events chan string) Client {
-  conn, _ := net.Dial("tcp", host)
+  conn, err := net.Dial("tcp", host)
+  if err != nil {
+    println("could not connect to that host")
+    os.Exit(0)
+  }
+
   go handleMessage(events, conn)
   conn.Write([]byte("REGISTER " + name + "\n"))
   return Client{host, conn, events}
@@ -23,8 +29,7 @@ func NewClient(host, name string, events chan string) Client {
 func (c *Client) sendMessage(cmd, arguments string) {
   _, err := c.conn.Write([]byte(cmd + " " + arguments + "\n"))
   if err != nil {
-    c.events <- "DISCONNECT"
-    return
+    os.Exit(0)
   }
   time.Sleep(time.Millisecond)
 }
@@ -33,8 +38,7 @@ func handleMessage(events chan string, conn net.Conn){
   for {
     line, err := bufio.NewReader(conn).ReadString('\n')
     if err != nil {
-      events <- "DISCONNECT"
-      return
+      os.Exit(0)
     }
     events <- line
   }
