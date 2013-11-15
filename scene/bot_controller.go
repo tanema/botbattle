@@ -67,7 +67,7 @@ func (sp *BotController) OnDie(byTimer bool) {
 		n.Physics.Shape.IsSensor = true
 	}
   sp.Health.Destroy()
-  if sp.Peer != nil {
+  if sp != nil && sp.GameObject() != nil && sp.Peer != nil {
     sp.Peer.OnDie()
   }
 	sp.GameObject().Destroy()
@@ -150,7 +150,7 @@ func (sp *BotController) Scan() {
 }
 
 func (sp *BotController) OnScan(name string, pos engine.Vector) {
-  if sp.Peer != nil {
+  if sp != nil && sp.GameObject() != nil && sp.Peer != nil {
     sp.Peer.OnScan(pos.X, pos.Y, name)
   }
 }
@@ -178,7 +178,7 @@ func (sp *BotController) Rotate(deg float32) {
 
 func (sp *BotController) GetCurrentPosition() {
   pos := sp.Transform().WorldPosition()
-  if sp.Peer != nil {
+  if sp != nil && sp.GameObject() != nil && sp.Peer != nil {
     sp.Peer.OnCurrentPostition(pos.X, pos.Y)
   }
 }
