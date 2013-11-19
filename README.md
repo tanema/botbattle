@@ -39,7 +39,7 @@ Client
   Shoot()
   Rotate(degrees float32)
   RotateTo(degress float32)
-  Scan(func(x, y float64, name string))
+  Scan(func(x, y float64, name string)) // will return x, y and name of a player that was scanned
   GetCurrentPosition(func(x, y float64))
 
 ```
