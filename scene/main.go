@@ -1,14 +1,14 @@
 package scene
 
 import (
+	"fmt"
 	"github.com/vova616/GarageEngine/engine"
 	"github.com/vova616/GarageEngine/engine/components"
 	"github.com/vova616/chipmunk"
 	"github.com/vova616/chipmunk/vect"
-  "time"
-  "math/rand"
+	"math/rand"
 	"strconv"
-  "fmt"
+	"time"
 )
 
 type MainScene struct {
@@ -20,22 +20,22 @@ var (
 	MainSceneGeneral  *MainScene
 	atlas             *engine.ManagedAtlas
 	backgroundTexture *engine.Texture
-  wallTexture       *engine.Texture
+	wallTexture       *engine.Texture
 	botTexture        *engine.Texture
 	missleTexture     *engine.Texture
 	scannerTexture    *engine.Texture
 	ArialFont         *engine.Font
-  Explosion_ID      engine.ID
+	Explosion_ID      engine.ID
 	missle            *Missle
 	scanner           *Scanner
 	Explosion         *engine.GameObject
-  Players           map[string]*BotController
+	Players           map[string]*BotController
 )
 
 const (
 	MissleTag = "Missle"
-  HP_A = 123
-  HPGUI_A = 124
+	HP_A      = 123
+	HPGUI_A   = 124
 )
 
 func LoadTextures() {
@@ -44,9 +44,9 @@ func LoadTextures() {
 
 	backgroundTexture, _ = engine.LoadTexture("./data/background.png")
 	botTexture, _ = engine.LoadTexture("./data/ship.png")
-  wallTexture, _ = engine.LoadTexture("./data/wall.png")
-  missleTexture, _ = engine.LoadTexture("./data/missile.png")
-  scannerTexture, _ = engine.LoadTexture("./data/scanner.png")
+	wallTexture, _ = engine.LoadTexture("./data/wall.png")
+	missleTexture, _ = engine.LoadTexture("./data/missile.png")
+	scannerTexture, _ = engine.LoadTexture("./data/scanner.png")
 
 	atlas = engine.NewManagedAtlas(2048, 1024)
 	_, Explosion_ID = atlas.LoadGroupSheet("./data/Explosion.png", 128, 128, 6*8)
@@ -59,18 +59,18 @@ func LoadTextures() {
 }
 
 func random(min, max int) int {
-  rand.Seed(time.Now().Unix())
-  return rand.Intn(max - min) + min
+	rand.Seed(time.Now().Unix())
+	return rand.Intn(max-min) + min
 }
 
 func SpawnBot(name string, peer *Peer) *BotController {
 	newPlayerController, exists := Players[name]
 	if exists {
-    newPlayerController.OnDie(false)
+		newPlayerController.OnDie(false)
 	}
-  newPlayer := engine.NewGameObject(name)
-  newPlayer.AddComponent(engine.NewPhysics(false))
-  newPlayer.AddComponent(engine.NewSprite(botTexture))
+	newPlayer := engine.NewGameObject(name)
+	newPlayer.AddComponent(engine.NewPhysics(false))
+	newPlayer.AddComponent(engine.NewSprite(botTexture))
 	newPlayer.AddComponent(NewDestoyable(float32(500)))
 	newPlayer.Transform().SetWorldPositionf(float32(random(-500, 500)), float32(random(-300, 300)))
 	newPlayer.Transform().SetScalef(50, 50)
@@ -104,31 +104,31 @@ func SpawnBot(name string, peer *Peer) *BotController {
 	HealthBarGUI.Transform().SetDepth(3)
 	HealthBarGUI.Transform().SetPositionf((uvHP.Ratio/2)*HealthBarGUI.Transform().Scale().X, 0)
 
-  newPlayerController = newPlayer.AddComponent(NewBotController(name, peer, Health, HealthBar, missle, scanner)).(*BotController)
-  Players[name] = newPlayerController
+	newPlayerController = newPlayer.AddComponent(NewBotController(name, peer, Health, HealthBar, missle, scanner)).(*BotController)
+	Players[name] = newPlayerController
 
-  return Players[name]
+	return Players[name]
 }
 
-func ReorderHealthBars(){
-  i := 0
-  for k, v := range Players {
-    i++
-    if v.NameObject == nil {
-      v.NameObject = engine.NewGameObject("Name")
-      v.NameObject.AddComponent(components.NewUIText(ArialFont, k))
-      v.NameObject.Transform().SetParent2(v.Health)
-      v.NameObject.Transform().SetDepth(5)
-      v.NameObject.Transform().SetPositionf(0, 1)
-      v.NameObject.Transform().SetScalef(20, 20)
-    }
-	  v.Health.Transform().SetPositionf(-float32(engine.Width)/2+110, -float32(engine.Height)/2+(40*float32(i)))
-  }
+func ReorderHealthBars() {
+	i := 0
+	for k, v := range Players {
+		i++
+		if v.NameObject == nil {
+			v.NameObject = engine.NewGameObject("Name")
+			v.NameObject.AddComponent(components.NewUIText(ArialFont, k))
+			v.NameObject.Transform().SetParent2(v.Health)
+			v.NameObject.Transform().SetDepth(5)
+			v.NameObject.Transform().SetPositionf(0, 1)
+			v.NameObject.Transform().SetScalef(20, 20)
+		}
+		v.Health.Transform().SetPositionf(-float32(engine.Width)/2+110, -float32(engine.Height)/2+(40*float32(i)))
+	}
 }
 
 func (s *MainScene) Load() {
 	engine.SetTitle("Bot Battle!")
-  Players = make(map[string]*BotController)
+	Players = make(map[string]*BotController)
 	LoadTextures()
 
 	s.Camera = engine.NewCamera()
@@ -186,7 +186,7 @@ func (s *MainScene) Load() {
 	scannerGameObject.AddComponent(engine.NewPhysics(false))
 	scannerGameObject.Transform().SetScalef(20, 20)
 	scannerGameObject.Physics.Shape.IsSensor = true
-  scanner = NewScanner()
+	scanner = NewScanner()
 	scannerGameObject.AddComponent(scanner)
 	ds = NewDestoyable(0)
 	ds.SetDestroyTime(1)
@@ -200,27 +200,27 @@ func (s *MainScene) Load() {
 	wall.AddComponent(engine.NewSprite(wallTexture))
 	wall.AddComponent(NewDestoyable(float32(engine.Inf)))
 	wall.Transform().SetScalef(100, 100)
-  wall.AddComponent(engine.NewPhysicsShape(true, chipmunk.NewBox(vect.Vect{0, 0}, 100, 100)))
+	wall.AddComponent(engine.NewPhysicsShape(true, chipmunk.NewBox(vect.Vect{0, 0}, 100, 100)))
 	wall.Physics.Shape.SetElasticity(0)
 	wall.Physics.Body.SetMass(10000000)
 	wall.Physics.Body.SetMoment(engine.Inf)
 
-  Wall := engine.NewGameObject("Wall")
+	Wall := engine.NewGameObject("Wall")
 	for i := -9; i < 9; i++ {
 		c := wall.Clone()
 		c.Transform().SetParent2(Wall)
-	  c.Transform().SetPositionf(float32(i)*80, 400)
+		c.Transform().SetPositionf(float32(i)*80, 400)
 		c = wall.Clone()
 		c.Transform().SetParent2(Wall)
-	  c.Transform().SetPositionf(float32(i)*80, -400)
+		c.Transform().SetPositionf(float32(i)*80, -400)
 	}
 	for i := -6; i < 6; i++ {
 		c := wall.Clone()
 		c.Transform().SetParent2(Wall)
-	  c.Transform().SetPositionf(680, float32(i)*80)
+		c.Transform().SetPositionf(680, float32(i)*80)
 		c = wall.Clone()
 		c.Transform().SetParent2(Wall)
-	  c.Transform().SetPositionf(-680, float32(i)*80)
+		c.Transform().SetPositionf(-680, float32(i)*80)
 	}
 
 	s.Layer1 = engine.NewGameObject("Layer1")

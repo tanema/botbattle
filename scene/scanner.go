@@ -6,7 +6,7 @@ import (
 
 type Scanner struct {
 	engine.BaseComponent
-  Player *BotController
+	Player *BotController
 }
 
 func NewScanner() *Scanner {
@@ -17,13 +17,13 @@ func (ms *Scanner) OnComponentAdd() {
 }
 
 func (ms *Scanner) OnHit(enemy *engine.GameObject, damager *DamageDealer) {
-  player, player_exists := Players[ms.GameObject().Tag]
-  _, enemy_exists := Players[enemy.Name()]
-  if player_exists && enemy_exists {
-    player.OnScan(enemy.Name(), enemy.Transform().WorldPosition())
-  } else {
-    player.OnScan("", enemy.Transform().WorldPosition())
-  }
+	player, player_exists := Players[ms.GameObject().Tag]
+	_, enemy_exists := Players[enemy.Name()]
+	if player_exists && enemy_exists {
+		player.OnScan(enemy.Name(), enemy.Transform().WorldPosition())
+	} else {
+		player.OnScan("", enemy.Transform().WorldPosition())
+	}
 }
 
 func (ms *Scanner) OnDie(byTimer bool) {

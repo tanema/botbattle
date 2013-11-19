@@ -50,4 +50,3 @@ func (ms *Missle) OnDie(byTimer bool) {
 	}
 	ms.GameObject().Destroy()
 }
-

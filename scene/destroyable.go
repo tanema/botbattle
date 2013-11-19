@@ -86,4 +86,3 @@ func (ds *Destoyable) OnCollisionEnter(arbiter engine.Arbiter) bool {
 
 	return true
 }
-
