@@ -83,6 +83,7 @@ func SpawnBot(name string, peer *Peer) *BotController {
 
 	Health := engine.NewGameObject("HP")
 	Health.Transform().SetParent2(MainSceneGeneral.Camera.GameObject())
+	Health.Transform().SetPositionf(-float32(engine.Width)/2+110, -float32(engine.Height)/2+40)
 
 	HealthGUI := engine.NewGameObject("HPGUI")
 	HealthGUI.AddComponent(engine.NewSprite2(atlas.Texture, engine.IndexUV(atlas, HPGUI_A)))
