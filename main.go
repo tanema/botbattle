@@ -8,8 +8,6 @@ import (
 	"runtime"
 )
 
-const rotSpeed = float32(250.0)
-
 func main() {
 	var player *scene.BotController
 	runtime.GOMAXPROCS(8)
@@ -20,7 +18,7 @@ func main() {
 	engine.LoadScene(scene.MainSceneGeneral)
 
 	var host string
-	flag.StringVar(&host, "h", "localhost:4569", "Your localhost that you are listening on")
+	flag.StringVar(&host, "h", "0.0.0.0:4569", "Your localhost that you are listening on")
 	flag.Parse()
 
 	game_server := scene.NewServer(host)

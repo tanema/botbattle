@@ -61,11 +61,15 @@ func (sp *BotController) OnDie(byTimer bool) {
 		n.Physics.Shape.Group = 1
 		n.Physics.Shape.IsSensor = true
 	}
-	sp.Health.Destroy()
+  if sp.Health != nil {
+	  sp.Health.Destroy()
+  }
 	if sp != nil && sp.GameObject() != nil && sp.Peer != nil {
 		sp.Peer.OnDie()
 	}
-	sp.GameObject().Destroy()
+  if sp.GameObject() != nil {
+	  sp.GameObject().Destroy()
+  }
 	delete(Players, sp.Name)
 }
 
@@ -82,7 +86,7 @@ func (sp *BotController) Shoot() {
 	if time.Now().After(sp.lastShoot) {
 		a := sp.Transform().Rotation()
 
-		pos := engine.Vector{0, 45, 0}
+		pos := engine.Vector{0, 50, 0}
 		s := sp.Transform().DirectionTransform(engine.Vector{0, 1, 0})
 
 		p := sp.Transform().WorldPosition()
@@ -116,7 +120,7 @@ func (sp *BotController) Shoot() {
 func (sp *BotController) Scan() {
 	a := sp.Transform().Rotation()
 
-	pos := engine.Vector{0, 45, 0}
+	pos := engine.Vector{0, 50, 0}
 	s := sp.Transform().DirectionTransform(engine.Vector{0, 1, 0})
 
 	p := sp.Transform().WorldPosition()

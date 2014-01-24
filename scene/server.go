@@ -22,7 +22,7 @@ func (s *server) Listen() {
 		if err != nil {
 			continue
 		}
-		s.handlePeer(conn)
+		go s.handlePeer(conn)
 	}
 }
 
