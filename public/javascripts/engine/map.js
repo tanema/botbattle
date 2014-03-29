@@ -54,6 +54,7 @@ Map.prototype.register_socket_events = function(){
   this.socket.on("fire gun",      function(bot_id){ self.on_fire_gun(bot_id)})
   this.socket.on("fire cannon",   function(bot_id){ self.on_fire_cannon(bot_id)})
   this.socket.on("scan",          function(bot_id){ self.on_scan(bot_id)})
+  this.socket.on("bot hit",       function(bot_id, dmg){ self.on_hit(bot_id, dmg)})
 };
 
 Map.prototype.loaded = function (){
@@ -123,7 +124,33 @@ Map.prototype.draw = function (ctx, deltatime){
   for(layer_name in this.layers){
     this.layers[layer_name].draw(ctx, deltatime);
   }
+  this.drawHealthBars(ctx)
 };
+
+Map.prototype.drawHealthBars = function (ctx){
+  var interval = 40,
+      i = 0;
+
+  for(bot_id in this.sprites){
+    var bot = this.sprites[bot_id];
+    i++;
+    ctx.save()
+    ctx.beginPath();
+    ctx.moveTo(34, (i*interval)+(32/2)+2);
+    ctx.lineTo((32+(32*(bot.health/25))), (i*interval)+(32/2)+2);
+    ctx.lineWidth = 28;
+    ctx.strokeStyle = 'rgba(255,0,0,0.7)';
+    ctx.stroke();
+    ctx.font = '23px pokemon';
+    ctx.fillStyle = 'white';
+    ctx.drawImage(this.spritesheet.get(49).img, 32, (i*interval))
+    ctx.drawImage(this.spritesheet.get(50).img, 64, (i*interval))
+    ctx.drawImage(this.spritesheet.get(51).img, 96, (i*interval))
+    ctx.drawImage(this.spritesheet.get(52).img, 128, (i*interval))
+    ctx.fillText(bot.name, 38, (i*interval)+26);
+    ctx.restore()
+  }
+}
 
 Map.prototype.on_register = function(id, x, y, rot, name){
   console.log(" → spawning " + id + ":" + name + " at " + x + "," + y + " rotation: " + rot);
@@ -190,5 +217,11 @@ Map.prototype.on_fire_cannon = function(bot_id){
 Map.prototype.on_scan = function(bot_id){
   try{
     this.sprites[bot_id].scan()
+  } catch(e){}
+}
+
+Map.prototype.on_hit = function(bot_id, dmg){
+  try{
+    this.sprites[bot_id].health -= dmg
   } catch(e){}
 }
