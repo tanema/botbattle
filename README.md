@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	botclient := client.NewBotClient("localhost", 3333)
+	botclient := client.NewBotClient("localhost:3333", "sir killalot")
 }
 ```
 
