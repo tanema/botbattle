@@ -50,6 +50,12 @@ Sprite.prototype.draw = function(ctx){
     ctx.rotate(Math.PI / 180 * (this.rotation - 90)); 
     ctx.drawImage(draw_frame, -middle_x, -middle_y)
     ctx.restore();
+
+    ctx.save()
+    ctx.font = '12px pokemon';
+    ctx.fillStyle = 'white';
+    ctx.fillText(this.name, draw_x+5, draw_y+15);
+    ctx.restore();
   }
   if(this.is_scanning){
     this.drawScan(ctx)
@@ -141,7 +147,6 @@ Sprite.prototype._drawWeapon = function(draw_cb, first_item){
 }
 
 Sprite.prototype.set = function(x, y){
-  this.is_moving = false
   this.x = x;
   this.y = y;
 };

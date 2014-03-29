@@ -47,10 +47,8 @@ Map.prototype.register_socket_events = function(){
   this.socket = this.engine.socket;
   this.socket.on("register",      function(bot_id, x, y, rot, name){ self.on_register(bot_id, x, y, rot, name)})
   this.socket.on("kill",          function(bot_id){ self.on_kill(bot_id)})
-  this.socket.on("rotate left",   function(bot_id){ self.on_rotate_left(bot_id)})
-  this.socket.on("rotate right",  function(bot_id){ self.on_rotate_right(bot_id)})
-  this.socket.on("move forward",  function(bot_id){ self.on_move_forward(bot_id)})
-  this.socket.on("move backward", function(bot_id){ self.on_move_backward(bot_id)})
+  this.socket.on("rotate",        function(bot_id, rot){ self.on_rotate(bot_id, rot)})
+  this.socket.on("move",          function(bot_id, x, y){ self.on_move(bot_id, x, y)})
   this.socket.on("fire gun",      function(bot_id){ self.on_fire_gun(bot_id)})
   this.socket.on("fire cannon",   function(bot_id){ self.on_fire_cannon(bot_id)})
   this.socket.on("scan",          function(bot_id){ self.on_scan(bot_id)})
@@ -168,37 +166,17 @@ Map.prototype.on_kill = function(bot_id){
   } catch(e){}
 }
 
-Map.prototype.on_rotate_left = function(bot_id){
+Map.prototype.on_rotate = function(bot_id, rot){
   try{
-    var bot = this.sprites[bot_id];
-    if(bot.rotation == 0){
-      bot.rotation = 270
-    } else {
-      bot.rotation -= 90
-    }
+    console.log(rot)
+    this.sprites[bot_id].rotation = rot;
   } catch(e){}
 }
 
-Map.prototype.on_rotate_right = function(bot_id){
-  try{
-    var bot = this.sprites[bot_id];
-    if(bot.rotation == 270){
-      bot.rotation = 0
-    } else {
-      bot.rotation += 90
-    }
-  } catch(e){}
-}
 
-Map.prototype.on_move_forward = function(bot_id){
+Map.prototype.on_move = function(bot_id, x, y){
   try{
-    this.sprites[bot_id].moveForward()
-  } catch(e){}
-}
-
-Map.prototype.on_move_backward = function(bot_id){
-  try{
-    this.sprites[bot_id].moveBackward()
+    this.sprites[bot_id].set(x, y)
   } catch(e){}
 }
 

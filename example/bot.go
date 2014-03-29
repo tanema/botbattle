@@ -2,41 +2,48 @@ package main
 
 import (
 	"botbattle/client"
-	"fmt"
 )
 
+type Bot struct {
+  *client.BotClient
+}
+
+func (self *Bot) ScanArena(){
+  first_status := self.Status()
+  last_x := first_status.X
+  last_y := first_status.Y
+  self.MoveForward()
+  for {
+    if status := self.Status(); last_x != status.X || last_y != status.Y {
+      self.ScanAndShoot()
+      self.ScanAndShoot()
+      self.ScanAndShoot()
+      self.ScanAndShoot()
+      self.MoveForward()
+      last_x = status.X
+      last_y = status.Y
+    } else {
+      break
+    }
+  }
+}
+
+func (self *Bot) ScanAndShoot(){
+  bots := self.Scan()
+  if len(bots) > 0 {
+    self.FireCannon()
+  }
+  self.RotRight()
+}
+
+
+func (self *Bot) Chase(){
+}
+
 func main() {
-  client := client.NewBotClient("localhost:3333", "Tim")
-	fmt.Println(client.ArenaWidth, client.ArenaHeight)
-	status := client.Status()
-	fmt.Println(status.X, status.Y, status.Rotation, status.Health)
-
-	shot := client.FireGun()
-	fmt.Println(shot)
-
-	x, y := client.MoveForward()
-	fmt.Println(x, y)
-	x, y = client.MoveForward()
-	fmt.Println(x, y)
-	x, y = client.MoveForward()
-	fmt.Println(x, y)
-
-	bots := client.Scan()
-	fmt.Println(bots)
-
-	rot := client.RotLeft()
-	fmt.Println(rot)
-
-	x, y = client.MoveBackward()
-	fmt.Println(x, y)
-	x, y = client.MoveBackward()
-	fmt.Println(x, y)
-	x, y = client.MoveBackward()
-	fmt.Println(x, y)
-
-	rot = client.RotRight()
-	fmt.Println(rot)
-
-	shot = client.FireCannon()
-	fmt.Println(shot)
+  bot := &Bot{client.NewBotClient("localhost:3333", "Tim")}
+  for {
+    bot.ScanArena()
+    bot.RotRight()
+  }
 }

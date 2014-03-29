@@ -64,7 +64,7 @@ func (self *Scene) KillBot(bot *Bot) {
 
 func (self *Scene) onBotRotLeft(client *conn.Client) int {
 	if bot := self.bots[client.Id]; bot != nil {
-		self.serv.Broadcast("rotate left", bot.client.Id)
+		self.serv.Broadcast("rotate", bot.client.Id, bot.rotation)
 		return bot.RotLeft()
 	}
 	return 0
@@ -72,7 +72,7 @@ func (self *Scene) onBotRotLeft(client *conn.Client) int {
 
 func (self *Scene) onBotRotRight(client *conn.Client) int {
 	if bot := self.bots[client.Id]; bot != nil {
-		self.serv.Broadcast("rotate right", bot.client.Id)
+		self.serv.Broadcast("rotate", bot.client.Id, bot.rotation)
 		return bot.RotRight()
 	}
 	return 0
@@ -80,7 +80,7 @@ func (self *Scene) onBotRotRight(client *conn.Client) int {
 
 func (self *Scene) onBotMoveForward(client *conn.Client) (int, int) {
 	if bot := self.bots[client.Id]; bot != nil {
-		self.serv.Broadcast("move forward", bot.client.Id)
+		self.serv.Broadcast("move", bot.client.Id, bot.x, bot.y)
 		return bot.MoveForward()
 	}
 	return 0, 0
@@ -88,7 +88,7 @@ func (self *Scene) onBotMoveForward(client *conn.Client) (int, int) {
 
 func (self *Scene) onBotMoveBackward(client *conn.Client) (int, int) {
 	if bot := self.bots[client.Id]; bot != nil {
-		self.serv.Broadcast("move backward", bot.client.Id)
+		self.serv.Broadcast("move", bot.client.Id, bot.x, bot.y)
 		return bot.MoveBackward()
 	}
 	return 0, 0

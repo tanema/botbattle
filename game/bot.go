@@ -67,7 +67,7 @@ func (self *Bot) MoveForward() (int, int) {
 			self.y--
 		}
 	case 270:
-		if self.y < ARENA_HEIGHT-1 {
+		if self.y < ARENA_HEIGHT-2 {
 			self.y++
 		}
 	case 0:
@@ -75,7 +75,7 @@ func (self *Bot) MoveForward() (int, int) {
 			self.x--
 		}
 	case 180:
-		if self.x < ARENA_WIDTH-1 {
+		if self.x < ARENA_WIDTH-2 {
 			self.x++
 		}
 	}
@@ -86,7 +86,7 @@ func (self *Bot) MoveForward() (int, int) {
 func (self *Bot) MoveBackward() (int, int) {
 	switch self.rotation {
 	case 90:
-		if self.y < ARENA_HEIGHT-1 {
+		if self.y < ARENA_HEIGHT-2 {
 			self.y++
 		}
 	case 270:
@@ -94,7 +94,7 @@ func (self *Bot) MoveBackward() (int, int) {
 			self.y--
 		}
 	case 0:
-		if self.x < ARENA_WIDTH-1 {
+		if self.x < ARENA_WIDTH-2 {
 			self.x++
 		}
 	case 180:
@@ -107,7 +107,7 @@ func (self *Bot) MoveBackward() (int, int) {
 }
 
 func (self *Bot) Hit(dmg int) {
-	self.health = self.health - dmg
+	self.health -= dmg
 	if self.scene.serv != nil { //check this for testing
 		self.scene.serv.Broadcast("bot hit", self.client.Id, dmg)
 	}
