@@ -1,0 +1,77 @@
+package conn
+
+import (
+	"bufio"
+	"encoding/json"
+	"fmt"
+	"github.com/gorilla/websocket"
+	"io"
+	"net"
+)
+
+var current_id = 0
+
+type Client struct {
+	Id     int             `json:"id"`
+	server *Server         `json:"-"`
+	tcp    net.Conn        `json:"-"`
+	socket *websocket.Conn `json:"-"`
+}
+
+func newTCPClient(server *Server, c net.Conn) *Client {
+	current_id++
+	return &Client{current_id, server, c, nil}
+}
+
+func newWebSocketClient(server *Server, c *websocket.Conn) *Client {
+	current_id++
+	return &Client{current_id, server, nil, c}
+}
+
+func (self *Client) ListenTCP() {
+	// Make a buffer to hold incoming data.
+	reader := bufio.NewReader(self.tcp)
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			if err == io.EOF {
+				self.tcp.Close()
+				self.server.KillClient(self)
+				return
+			}
+			fmt.Println("Error reading:", err.Error())
+		}
+
+		message := &Message{}
+		json.Unmarshal([]byte(line), message)
+		resp := self.server.Call(message, self)
+		message_json, _ := json.Marshal(resp)
+
+		_, err = self.tcp.Write(append(message_json, "\n"...))
+		if err != nil {
+			println("Error send reply:", err.Error())
+		}
+	}
+}
+
+func (self *Client) ListenWebSocket() {
+	for {
+		message := &Message{}
+		if err := self.socket.ReadJSON(message); err != nil {
+			self.socket.Close()
+			self.server.KillClient(self)
+			return
+		}
+		self.socket.WriteJSON(self.server.Call(message, self))
+	}
+}
+
+func (self *Client) Emit(event_name string, args ...interface{}) {
+	message := &Message{
+		EventName: event_name,
+		EventData: args,
+	}
+	if self.socket != nil {
+		self.socket.WriteJSON(message)
+	}
+}

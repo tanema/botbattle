@@ -1,115 +1,126 @@
 package client
 
+//TODO Scan and Status struct to have better formatted results
+
 import (
+	"botbattle/conn"
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"net"
 	"os"
-	"strconv"
-	"strings"
-	"time"
 )
 
-type Client struct {
-	host       string
-	conn       net.Conn
-	scan_event chan string
-	pos_event  chan string
+type BotClient struct {
+	conn net.Conn
+  ArenaHeight int
+  ArenaWidth  int
 }
 
-type scan_cb func(x, y float64, name string)
-type current_pos_cb func(x, y float64)
+type Status struct {
+	X            int
+	Y            int
+	Rotation     int
+	Health       int
+}
 
-func NewClient(host, name string) Client {
+func NewBotClient(host, name string) *BotClient {
 	conn, err := net.Dial("tcp", host)
 	if err != nil {
 		println("could not connect to that host")
 		fmt.Println(err)
 		os.Exit(0)
 	}
-	scan_event := make(chan string)
-	pos_event := make(chan string)
-	go handleMessage(scan_event, pos_event, conn)
-	conn.Write([]byte("REGISTER " + name + "\n"))
-	return Client{host, conn, scan_event, pos_event}
+  newClient := new(BotClient)
+  newClient.conn = conn
+	resp := newClient.request("register", name)
+	newClient.ArenaWidth = int(resp.EventData[0].(float64))
+	newClient.ArenaHeight = int(resp.EventData[1].(float64))
+	return newClient
 }
 
-func (c *Client) sendMessage(cmd, arguments string) {
-	_, err := c.conn.Write([]byte(cmd + " " + arguments + "\n"))
-	if err != nil {
-		os.Exit(0)
-	}
-	time.Sleep(time.Millisecond)
+func (self *BotClient) Status() *Status {
+	resp := self.request("status")
+	x := int(resp.EventData[0].(float64))
+	y := int(resp.EventData[1].(float64))
+	rotation := int(resp.EventData[2].(float64))
+	health := int(resp.EventData[3].(float64))
+	return &Status{x, y, rotation, health}
 }
 
-func handleMessage(scan_event, pos_event chan string, conn net.Conn) {
-	for {
-		line, err := bufio.NewReader(conn).ReadString('\n')
-		if err != nil {
-			os.Exit(0)
+func (self *BotClient) RotLeft() (rot int) {
+	resp := self.request("rotate left")
+	rot = int(resp.EventData[0].(float64))
+	return
+}
+
+func (self *BotClient) RotRight() (rot int) {
+	resp := self.request("rotate right")
+	rot = int(resp.EventData[0].(float64))
+	return
+}
+
+func (self *BotClient) MoveForward() (x int, y int) {
+	resp := self.request("move forward")
+	x = int(resp.EventData[0].(float64))
+	y = int(resp.EventData[1].(float64))
+	return
+}
+
+func (self *BotClient) MoveBackward() (x int, y int) {
+	resp := self.request("move backward")
+	x = int(resp.EventData[0].(float64))
+	y = int(resp.EventData[1].(float64))
+	return
+}
+
+func (self *BotClient) Scan() []*Status {
+	resp := self.request("scan")
+	result := []*Status{}
+	if statuses, ok := resp.EventData[0].([]interface{}); ok {
+		for _, state_interface := range statuses {
+			state_array := state_interface.([]interface{})
+			new_status := new(Status)
+			new_status.X = int(state_array[0].(float64))
+			new_status.Y = int(state_array[1].(float64))
+			new_status.Rotation = int(state_array[2].(float64))
+			new_status.Health = int(state_array[3].(float64))
+			result = append(result, new_status)
 		}
-		line = strings.Replace(line, "\n", "", -1)
-		bits := strings.SplitN(line, " ", 2)
-		switch bits[0] {
-		case "ON_DIE":
-			println("you died")
-			os.Exit(0)
-		case "ON_SCAN":
-			scan_event <- bits[1]
-		case "ON_CURRENT_POS":
-			pos_event <- bits[1]
-		}
 	}
+	return result
 }
 
-func (c *Client) Forward() {
-	c.sendMessage("FORWARD", "")
+func (self *BotClient) FireGun() bool {
+	resp := self.request("fire gun")
+	return resp.EventData[0].(bool)
 }
 
-func (c *Client) Backward() {
-	c.sendMessage("BACKWARD", "")
+func (self *BotClient) FireCannon() bool {
+	resp := self.request("fire cannon")
+	return resp.EventData[0].(bool)
 }
 
-func (c *Client) Stop() {
-	c.sendMessage("STOP", "")
-}
-
-func (c *Client) Shoot() {
-	c.sendMessage("SHOOT", "")
-}
-
-func (c *Client) Rotate(deg float32) {
-	c.sendMessage("ROTATE", fmt.Sprintf("%f", deg))
-}
-
-func (c *Client) RotateTo(deg float32) {
-	c.sendMessage("ROTATE_TO", fmt.Sprintf("%f", deg))
-}
-
-func (c *Client) Scan(cb scan_cb) {
-	_, err := c.conn.Write([]byte("SCAN \n"))
+func (self *BotClient) request(line string, args ...interface{}) *conn.Message {
+	message := conn.Message{
+		EventName: line,
+		EventData: args,
+	}
+	message_json, _ := json.Marshal(message)
+	_, err := self.conn.Write(append(message_json, "\n"...))
 	if err != nil {
-		os.Exit(0)
+		println("Write to server failed:", err.Error())
+		os.Exit(1)
 	}
-	for line := range c.scan_event {
-		items := strings.Split(line, ":")
-		x, _ := strconv.ParseFloat(items[0], 64)
-		y, _ := strconv.ParseFloat(items[1], 64)
-		cb(x, y, items[2])
-		return
-	}
-}
 
-func (c *Client) GetCurrentPosition(cb current_pos_cb) {
-	_, err := c.conn.Write([]byte("CURRENT_POS \n"))
+	reply, err := bufio.NewReader(self.conn).ReadString('\n')
 	if err != nil {
-		os.Exit(0)
+		println("Write to server failed:", err.Error())
+		os.Exit(1)
 	}
-	for line := range c.pos_event {
-		items := strings.Split(line, ":")
-		x, _ := strconv.ParseFloat(items[0], 64)
-		y, _ := strconv.ParseFloat(items[1], 64)
-		cb(x, y)
-		return
-	}
+
+	response := &conn.Message{}
+	json.Unmarshal([]byte(reply), response)
+
+	return response
 }

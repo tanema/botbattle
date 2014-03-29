@@ -1,0 +1,35 @@
+@font-face {
+  font-family: 'pokemon';
+  src: url('/fonts/pokemon.ttf');
+}
+
+body {
+  font: 20px pokemon;
+  overflow:hidden;
+  background-color: black;
+}
+
+#contents{
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-align: center;
+  color: white;
+}
+
+#fps_container{
+  float: right;
+  background: rgba(0, 0, 0, 0.31);
+  padding: 0 10px 10px 10px;
+}
+
+.title{
+  font: 30px;
+  background: rgba(0, 0, 0, 0.31);
+  padding: 10px;
+}
+
+.title div {
+  display: inline-block;
+}
