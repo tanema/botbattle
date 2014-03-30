@@ -12,6 +12,8 @@ const (
 	SCAN_WAIT   = 500
 	GUN_WAIT    = 1000
 	CANNON_WAIT = 3000
+  SHIELD_ON   = 3000
+  SHIELD_POWER_UP = 5000
 )
 
 type Bot struct {
@@ -22,6 +24,8 @@ type Bot struct {
 	x        int          `json:"x"`
 	y        int          `json:"y"`
 	health   int          `json:"health"`
+  ShieldOn    bool
+  ShieldReady bool
 }
 
 func NewBot(scene *Scene, new_client *conn.Client, name string) *Bot {
@@ -33,6 +37,8 @@ func NewBot(scene *Scene, new_client *conn.Client, name string) *Bot {
 		rand.Intn(ARENA_WIDTH),
 		rand.Intn(ARENA_HEIGHT),
 		100,
+    false,
+    true,
 	}
 }
 
@@ -143,6 +149,24 @@ func (self *Bot) Scan() [][]int {
 	}
 	time.Sleep(SCAN_WAIT * time.Millisecond)
 	return result
+}
+
+func (self *Bot) Shield() bool {
+  if(self.ShieldReady){
+    self.ShieldOn = true;
+    self.ShieldReady = false;
+    self.scene.serv.Broadcast("shield", self.client.Id, true)
+    go func(){
+      time.Sleep(SHIELD_ON * time.Millisecond)
+      self.ShieldOn = false;
+      self.scene.serv.Broadcast("shield", self.client.Id, false)
+      time.Sleep(SHIELD_POWER_UP * time.Millisecond)
+      self.ShieldReady = true;
+    }()
+    return true
+  } else {
+    return false
+  }
 }
 
 func (self *Bot) LookingAt() []*Bot {

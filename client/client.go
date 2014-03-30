@@ -99,6 +99,11 @@ func (self *BotClient) FireCannon() bool {
 	return resp.EventData[0].(bool)
 }
 
+func (self *BotClient) Shield() bool {
+	resp := self.request("shield")
+	return resp.EventData[0].(bool)
+}
+
 func (self *BotClient) request(line string, args ...interface{}) *conn.Message {
 	message := conn.Message{
 		EventName: line,

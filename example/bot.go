@@ -43,6 +43,7 @@ func (self *Bot) Chase(){
 func main() {
   bot := &Bot{client.NewBotClient("localhost:3333", "Tim")}
   for {
+    bot.Shield()
     bot.ScanArena()
     bot.RotRight()
   }

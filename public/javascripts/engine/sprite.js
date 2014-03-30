@@ -66,6 +66,12 @@ Sprite.prototype.draw = function(ctx){
   if(this.is_firing_gun){
     this.drawGun(ctx)
   }
+  if(this.shield){
+    ctx.beginPath();
+    ctx.arc(draw_x+(this.width/2), draw_y+(this.height/2), (32/2)+10, 0, 2 * Math.PI, false);
+    ctx.fillStyle = 'rgba(0,0,255,0.5)';
+    ctx.fill();
+  }
 };
 
 Sprite.prototype.drawScan = function(ctx){
@@ -76,7 +82,7 @@ Sprite.prototype.drawScan = function(ctx){
     ctx.lineTo(end_x, end_y);
 
     ctx.lineWidth = 10;
-    ctx.strokeStyle = 'rgba(0,255,0,0.5);';
+    ctx.strokeStyle = 'rgba(0,255,0,0.5)';
 
     ctx.stroke();
     ctx.restore();

@@ -53,6 +53,7 @@ Map.prototype.register_socket_events = function(){
   this.socket.on("fire gun",      function(bot_id){ self.on_fire_gun(bot_id)})
   this.socket.on("fire cannon",   function(bot_id){ self.on_fire_cannon(bot_id)})
   this.socket.on("scan",          function(bot_id){ self.on_scan(bot_id)})
+  this.socket.on("shield",        function(bot_id, on){ self.on_shield(bot_id, on)})
   this.socket.on("bot hit",       function(bot_id, dmg){ self.on_hit(bot_id, dmg)})
 };
 
@@ -215,5 +216,13 @@ Map.prototype.on_scan = function(bot_id){
 Map.prototype.on_hit = function(bot_id, dmg){
   try{
     this.sprites[bot_id].health -= dmg
+  } catch(e){}
+}
+
+
+Map.prototype.on_shield = function(bot_id, on){
+  console.log(on)
+  try{
+    this.sprites[bot_id].shield = on;
   } catch(e){}
 }

@@ -37,6 +37,7 @@ func (self *Scene) bindActions() {
 	self.serv.Handle("fire gun", self.onFireGun)
 	self.serv.Handle("fire cannon", self.onFireCannon)
 	self.serv.Handle("scan", self.onScan)
+	self.serv.Handle("shield", self.onShield)
 }
 
 type Status struct {
@@ -143,6 +144,13 @@ func (self *Scene) onScan(client *conn.Client) [][]int {
 		return bot.Scan()
 	}
 	return [][]int{}
+}
+
+func (self *Scene) onShield(client *conn.Client) bool {
+	if bot := self.bots[client.Id]; bot != nil {
+		return bot.Shield()
+	}
+	return false
 }
 
 func (self *Scene) Start() {
