@@ -2,6 +2,7 @@ package game
 
 import (
 	"botbattle/conn"
+	"time"
 )
 
 const (
@@ -25,6 +26,7 @@ func NewScene() *Scene {
 }
 
 func (self *Scene) bindActions() {
+	self.serv.Handle("connected", self.onWebSocketConnected)
 	self.serv.Handle("register", self.onRegister)
 	self.serv.Handle("status", self.onStatus)
 	self.serv.Handle("disconnected", self.onBotDisconnect)
@@ -35,6 +37,27 @@ func (self *Scene) bindActions() {
 	self.serv.Handle("fire gun", self.onFireGun)
 	self.serv.Handle("fire cannon", self.onFireCannon)
 	self.serv.Handle("scan", self.onScan)
+}
+
+type Status struct {
+  Id        int     `json:"id"`
+  X         int     `json:"x"`
+  Y         int     `json:"y"`
+  Rotation  int     `json:"rotation"`
+  Name      string  `json:"name"`
+  Health    int     `json:"health"`
+}
+
+func (self *Scene) onWebSocketConnected(client *conn.Client) {
+  result := []Status{}
+  for _, bot := range self.bots {
+    result = append(result, Status{bot.client.Id, bot.x, bot.y, bot.rotation, bot.name, bot.health})
+  }
+  go func(){
+	  time.Sleep(1000 * time.Millisecond)
+    client.Emit("connected", result)
+  }()
+  return
 }
 
 func (self *Scene) onRegister(client *conn.Client, name string) (int, int) {

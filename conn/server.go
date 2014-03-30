@@ -127,9 +127,9 @@ func (self *Server) Listen(options map[string]string) {
 			}
 			client := newWebSocketClient(self, ws)
 			self.clients[client.Id] = client
-			self.Call(&Message{"connected", []interface{}{}}, client)
-			client.Emit("connected", client)
 			go client.ListenWebSocket()
+
+			self.Call(&Message{"connected", []interface{}{}}, client)
 		})
 	}
 
