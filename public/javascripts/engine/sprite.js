@@ -122,25 +122,25 @@ Sprite.prototype._drawWeapon = function(draw_cb, first_item){
   case 90:
     draw_cb(
       x + (this.width/2), y, 
-      x + (this.width/2), (item ? (item.y + this.height) : 0)
+      x + (this.width/2), (item ? ((item.y * this.height) + this.height/2) : 0)
     )
     break;
   case 270:
     draw_cb(
       x + (this.width/2), y+this.height,
-      x + (this.width/2), (item ? item.y : 12*this.width)
+      x + (this.width/2), (item ? ((item.y * this.height) + this.height/2) : 12*this.width)
     )
     break;
   case 0:
     draw_cb(
       x, y+(this.height/2), 
-      (item ? (item.x + this.width) : 0), y+(this.height/2)
+      (item ? ((item.x * this.width) + this.width) : 0), y+(this.height/2)
     )
     break;
   case 180:
     draw_cb(
       x+this.width, y+(this.height/2), 
-      (item ? item.x : 24*this.height), y+(this.height/2)
+      (item ? ((item.x * this.width) + this.width) : 24*this.height), y+(this.height/2)
     )
     break;
   }
@@ -241,7 +241,8 @@ Sprite.prototype.lookingAt = function(){
   var result = [],
       bots = this.map.sprites;
 
-  for(var i = 0; i < bots.length; i++){
+  for(var bot_id in bots){
+    var bot = bots[bot_id];
     switch(this.rotation){
     case 90:
       if(this.y > bot.y && this.x == bot.x) {
@@ -266,13 +267,13 @@ Sprite.prototype.lookingAt = function(){
   result.sort(function(b1, b2){
     switch(self.rotation){
     case 90:
-      return b1.y > b2.y
-    case 270:
       return b1.y < b2.y
+    case 270:
+      return b1.y > b2.y
     case 0:
-      return b1.x > b2.x
-    case 180:
       return b1.x < b2.x
+    case 180:
+      return b1.x > b2.x
     }
   })
   return result

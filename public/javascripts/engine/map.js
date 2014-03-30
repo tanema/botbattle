@@ -168,7 +168,6 @@ Map.prototype.on_kill = function(bot_id){
 
 Map.prototype.on_rotate = function(bot_id, rot){
   try{
-    console.log(rot)
     this.sprites[bot_id].rotation = rot;
   } catch(e){}
 }
