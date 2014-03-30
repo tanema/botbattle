@@ -1,7 +1,5 @@
 package client
 
-//TODO Scan and Status struct to have better formatted results
-
 import (
 	"botbattle/conn"
 	"bufio"
@@ -109,13 +107,13 @@ func (self *BotClient) request(line string, args ...interface{}) *conn.Message {
 	message_json, _ := json.Marshal(message)
 	_, err := self.conn.Write(append(message_json, "\n"...))
 	if err != nil {
-		println("Write to server failed:", err.Error())
+		println("looks like you died")
 		os.Exit(1)
 	}
 
 	reply, err := bufio.NewReader(self.conn).ReadString('\n')
 	if err != nil {
-		println("Write to server failed:", err.Error())
+		println("looks like you died")
 		os.Exit(1)
 	}
 

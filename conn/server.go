@@ -112,6 +112,7 @@ func (self *Server) Broadcast(event_name string, args ...interface{}) {
 }
 
 func (self *Server) KillClient(client *Client) {
+	self.Broadcast("kill", client.Id)
 	self.Call(&Message{"disconnected", []interface{}{}}, client)
 	delete(self.clients, client.Id)
 }

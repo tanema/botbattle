@@ -58,8 +58,8 @@ func (self *Scene) onBotDisconnect(client *conn.Client) {
 }
 
 func (self *Scene) KillBot(bot *Bot) {
+  bot.client.Close()
 	delete(self.bots, bot.client.Id)
-	self.serv.Broadcast("kill", bot.client.Id)
 }
 
 func (self *Scene) onBotRotLeft(client *conn.Client) int {

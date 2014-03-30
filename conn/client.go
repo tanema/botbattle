@@ -3,9 +3,7 @@ package conn
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/websocket"
-	"io"
 	"net"
 )
 
@@ -28,18 +26,24 @@ func newWebSocketClient(server *Server, c *websocket.Conn) *Client {
 	return &Client{current_id, server, nil, c}
 }
 
+func (self *Client) Close() {
+  if self.tcp != nil {
+    self.tcp.Close()
+  }
+  if self.socket != nil {
+    self.socket.Close()
+  }
+}
+
 func (self *Client) ListenTCP() {
 	// Make a buffer to hold incoming data.
 	reader := bufio.NewReader(self.tcp)
 	for {
 		line, err := reader.ReadString('\n')
 		if err != nil {
-			if err == io.EOF {
-				self.tcp.Close()
-				self.server.KillClient(self)
-				return
-			}
-			fmt.Println("Error reading:", err.Error())
+      self.tcp.Close()
+      self.server.KillClient(self)
+      return
 		}
 
 		message := &Message{}
@@ -58,7 +62,7 @@ func (self *Client) ListenWebSocket() {
 	for {
 		message := &Message{}
 		if err := self.socket.ReadJSON(message); err != nil {
-			self.socket.Close()
+      self.socket.Close()
 			self.server.KillClient(self)
 			return
 		}
