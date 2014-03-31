@@ -15,7 +15,6 @@ function Sprite(display_object_options, map, layer){
   this.is_firing_gun = false;
 
   this.initalize_properties();
-  this.animationloop = Grouter.gameloop(this.animate, this);
 
   map.sprites[this.id] = this;
   layer.sprites[this.id] = this;
@@ -41,7 +40,7 @@ Sprite.prototype.draw = function(ctx){
   var sprite = this.spritesheet.get(this.sprite_index),
       draw_frame = sprite ? sprite.img : null;
 
-  if(draw_frame){
+  if(draw_frame && !this.explosion){
     ctx.save(); 
     ctx.translate(draw_x, draw_y); 
     var middle_x = (this.width/2),
@@ -56,17 +55,20 @@ Sprite.prototype.draw = function(ctx){
     ctx.fillStyle = 'white';
     ctx.fillText(this.name, draw_x+5, draw_y+15);
     ctx.restore();
+  } else if(this.explosion){
+    this.explosion.draw(ctx)
   }
-  if(this.is_scanning){
+
+  if(this.is_scanning && !this.explosion){
     this.drawScan(ctx)
   }
-  if(this.is_firing_cannon){
+  if(this.is_firing_cannon && !this.explosion){
     this.drawCannon(ctx)
   }
-  if(this.is_firing_gun){
+  if(this.is_firing_gun && !this.explosion){
     this.drawGun(ctx)
   }
-  if(this.shield){
+  if(this.shield && !this.explosion){
     ctx.beginPath();
     ctx.arc(draw_x+(this.width/2), draw_y+(this.height/2), (32/2)+10, 0, 2 * Math.PI, false);
     ctx.fillStyle = 'rgba(0,0,255,0.5)';
@@ -103,6 +105,7 @@ Sprite.prototype.drawCannon = function(ctx){
     ctx.restore();
   }, true)
 }
+
 Sprite.prototype.drawGun = function(ctx){
   this._drawWeapon(function(start_x, start_y, end_x, end_y){
     ctx.save(); 
@@ -158,15 +161,15 @@ Sprite.prototype.set = function(x, y){
 };
 
 Sprite.prototype.kill = function(){
-  delete this.layer.sprites[this.id];
-  delete this.map.sprites[this.id];
-};
+  var x = ( this.x * this.width),
+      y = ( this.y * this.height ),
+      self = this;
 
-//@OVERRIDE this just make sure the displayable is facing the speaker/actor
-Sprite.prototype.unload = function(){
-  this.animationloop.stop();
-  //call Super
-  this.constructor.prototype.unload.call(this);
+  this.explosion = new Explosion(x, y, this);
+  setTimeout(function(){
+    delete self.layer.sprites[self.id];
+    delete self.map.sprites[self.id];
+  },3000)
 };
 
 Sprite.prototype.moveForward = function(){
@@ -284,6 +287,3 @@ Sprite.prototype.lookingAt = function(){
   })
   return result
 }
-
-Sprite.prototype.animate = function(deltatime){
-};

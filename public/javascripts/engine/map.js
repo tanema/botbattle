@@ -221,7 +221,6 @@ Map.prototype.on_hit = function(bot_id, dmg){
 
 
 Map.prototype.on_shield = function(bot_id, on){
-  console.log(on)
   try{
     this.sprites[bot_id].shield = on;
   } catch(e){}

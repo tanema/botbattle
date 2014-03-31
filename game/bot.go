@@ -113,7 +113,11 @@ func (self *Bot) MoveBackward() (int, int) {
 }
 
 func (self *Bot) Hit(dmg int) {
-	self.health -= dmg
+  if self.ShieldOn {
+    self.health -= dmg/2
+  } else {
+    self.health -= dmg
+  }
 	if self.scene.serv != nil { //check this for testing
 		self.scene.serv.Broadcast("bot hit", self.client.Id, dmg)
 	}
