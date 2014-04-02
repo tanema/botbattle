@@ -16,6 +16,7 @@ type BotClient struct {
 }
 
 type Status struct {
+  Id           int
 	X            int
 	Y            int
 	Rotation     int
@@ -79,10 +80,11 @@ func (self *BotClient) Scan() []*Status {
 		for _, state_interface := range statuses {
 			state_array := state_interface.([]interface{})
 			new_status := new(Status)
-			new_status.X = int(state_array[0].(float64))
-			new_status.Y = int(state_array[1].(float64))
-			new_status.Rotation = int(state_array[2].(float64))
-			new_status.Health = int(state_array[3].(float64))
+			new_status.Id = int(state_array[0].(float64))
+			new_status.X = int(state_array[1].(float64))
+			new_status.Y = int(state_array[2].(float64))
+			new_status.Rotation = int(state_array[3].(float64))
+			new_status.Health = int(state_array[4].(float64))
 			result = append(result, new_status)
 		}
 	}

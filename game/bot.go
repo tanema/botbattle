@@ -149,7 +149,7 @@ func (self *Bot) Scan() [][]int {
 	bots := self.LookingAt()
 	for _, bot := range bots {
 		x, y, r, h := bot.Status()
-		result = append(result, []int{x, y, r, h})
+		result = append(result, []int{bot.client.Id, x, y, r, h})
 	}
 	time.Sleep(SCAN_WAIT * time.Millisecond)
 	return result
