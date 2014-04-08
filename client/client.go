@@ -1,7 +1,7 @@
 package client
 
 import (
-	"botbattle/conn"
+	"../conn"
 	"bufio"
 	"encoding/json"
 	"fmt"

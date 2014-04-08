@@ -1,7 +1,7 @@
 package game
 
 import (
-	"botbattle/conn"
+	"../conn"
 	"math/rand"
 	"sort"
 	"time"
