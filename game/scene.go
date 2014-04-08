@@ -68,11 +68,11 @@ func (self *Scene) onRegister(client *conn.Client, name string) (int, int) {
 	return ARENA_WIDTH, ARENA_HEIGHT
 }
 
-func (self *Scene) onStatus(client *conn.Client) (int, int, int, int) {
+func (self *Scene) onStatus(client *conn.Client) (int, int, int, int, int) {
 	if bot := self.bots[client.Id]; bot != nil {
 		return bot.Status()
 	}
-	return 0, 0, 0, 0
+	return 0, 0, 0, 0, 0
 }
 
 func (self *Scene) onBotDisconnect(client *conn.Client) {

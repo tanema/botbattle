@@ -40,11 +40,12 @@ func NewBotClient(host, name string) *BotClient {
 
 func (self *BotClient) Status() *Status {
 	resp := self.request("status")
-	x := int(resp.EventData[0].(float64))
-	y := int(resp.EventData[1].(float64))
-	rotation := int(resp.EventData[2].(float64))
-	health := int(resp.EventData[3].(float64))
-	return &Status{x, y, rotation, health}
+	id := int(resp.EventData[0].(float64))
+	x := int(resp.EventData[1].(float64))
+	y := int(resp.EventData[2].(float64))
+	rotation := int(resp.EventData[3].(float64))
+	health := int(resp.EventData[4].(float64))
+	return &Status{id, x, y, rotation, health}
 }
 
 func (self *BotClient) RotLeft() (rot int) {

@@ -42,8 +42,8 @@ func NewBot(scene *Scene, new_client *conn.Client, name string) *Bot {
 	}
 }
 
-func (self *Bot) Status() (int, int, int, int) {
-	return self.x, self.y, self.rotation, self.health
+func (self *Bot) Status() (int, int, int, int, int) {
+	return self.client.Id, self.x, self.y, self.rotation, self.health
 }
 
 func (self *Bot) RotRight() int {
@@ -148,8 +148,8 @@ func (self *Bot) Scan() [][]int {
 	var result [][]int
 	bots := self.LookingAt()
 	for _, bot := range bots {
-		x, y, r, h := bot.Status()
-		result = append(result, []int{bot.client.Id, x, y, r, h})
+		id, x, y, r, h := bot.Status()
+		result = append(result, []int{id, x, y, r, h})
 	}
 	time.Sleep(SCAN_WAIT * time.Millisecond)
 	return result
