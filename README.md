@@ -41,5 +41,6 @@ type BotClient
   func RotateRight() (rotation int)
   func Scan() ([]*Status)
   func Status() (*Status)
+  func Shield() bool
 
 ```
