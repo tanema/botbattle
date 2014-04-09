@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./game"
+	"botbattle/game"
 	"fmt"
 	"net/http"
 )

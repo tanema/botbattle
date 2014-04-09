@@ -1,7 +1,7 @@
 package game
 
 import (
-	"../conn"
+	"botbattle/conn"
 	"time"
 )
 

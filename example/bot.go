@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../client"
+	"botbattle/client"
 )
 
 type Bot struct {

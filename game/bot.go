@@ -1,7 +1,7 @@
 package game
 
 import (
-	"../conn"
+	"botbattle/conn"
 	"math/rand"
 	"sort"
 	"time"
@@ -73,7 +73,7 @@ func (self *Bot) MoveForward() (int, int) {
 			self.y--
 		}
 	case 270:
-		if self.y < ARENA_HEIGHT-2 {
+		if self.y < ARENA_HEIGHT-1 {
 			self.y++
 		}
 	case 0:
@@ -81,7 +81,7 @@ func (self *Bot) MoveForward() (int, int) {
 			self.x--
 		}
 	case 180:
-		if self.x < ARENA_WIDTH-2 {
+		if self.x < ARENA_WIDTH-1 {
 			self.x++
 		}
 	}
