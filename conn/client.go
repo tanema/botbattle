@@ -51,10 +51,7 @@ func (self *Client) ListenTCP() {
 		resp := self.server.Call(message, self)
 		message_json, _ := json.Marshal(resp)
 
-		_, err = self.tcp.Write(append(message_json, "\n"...))
-		if err != nil {
-			println("Error send reply:", err.Error())
-		}
+		self.tcp.Write(append(message_json, "\n"...))
 	}
 }
 
