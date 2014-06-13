@@ -1,7 +1,8 @@
 package game
 
 import (
-	"../conn"
+	"botbattle/conn"
+	"encoding/json"
 	"math/rand"
 	"sort"
 	"time"
@@ -42,8 +43,8 @@ func NewBot(scene *Scene, new_client *conn.Client, name string) *Bot {
 	}
 }
 
-func (self *Bot) Status() (int, int, int, int, int) {
-	return self.client.Id, self.x, self.y, self.rotation, self.health
+func (self *Bot) Status() *Status {
+	return &Status{self.client.Id, self.x, self.y, self.rotation, self.name, self.health}
 }
 
 func (self *Bot) RotRight() int {
@@ -69,19 +70,19 @@ func (self *Bot) RotLeft() int {
 func (self *Bot) MoveForward() (int, int) {
 	switch self.rotation {
 	case 90:
-		if self.y > 0 {
+		if self.y > 0 && self.At(self.x, self.y-1) == nil {
 			self.y--
 		}
 	case 270:
-		if self.y < ARENA_HEIGHT-2 {
+		if self.y < ARENA_HEIGHT && self.At(self.x, self.y+1) == nil {
 			self.y++
 		}
 	case 0:
-		if self.x > 0 {
+		if self.x > 0 && self.At(self.x-1, self.y) == nil {
 			self.x--
 		}
 	case 180:
-		if self.x < ARENA_WIDTH-2 {
+		if self.x < ARENA_WIDTH && self.At(self.x+1, self.y) == nil {
 			self.x++
 		}
 	}
@@ -92,19 +93,19 @@ func (self *Bot) MoveForward() (int, int) {
 func (self *Bot) MoveBackward() (int, int) {
 	switch self.rotation {
 	case 90:
-		if self.y < ARENA_HEIGHT-2 {
+		if self.y < ARENA_HEIGHT && self.At(self.x, self.y+1) == nil {
 			self.y++
 		}
 	case 270:
-		if self.y > 0 {
+		if self.y > 0 && self.At(self.x, self.y-1) != nil {
 			self.y--
 		}
 	case 0:
-		if self.x < ARENA_WIDTH-2 {
+		if self.x < ARENA_WIDTH && self.At(self.x+1, self.y) != nil {
 			self.x++
 		}
 	case 180:
-		if self.x > 0 {
+		if self.x > 0  && self.At(self.x-1, self.y) != nil {
 			self.x--
 		}
 	}
@@ -144,12 +145,12 @@ func (self *Bot) FireCannon() bool {
 	return len(targets) > 0
 }
 
-func (self *Bot) Scan() [][]int {
-	var result [][]int
+func (self *Bot) Scan() []string {
+	var result []string
 	bots := self.LookingAt()
 	for _, bot := range bots {
-		id, x, y, r, h := bot.Status()
-		result = append(result, []int{id, x, y, r, h})
+		json_status, _ := json.Marshal(bot.Status())
+		result = append(result, string(json_status))
 	}
 	time.Sleep(SCAN_WAIT * time.Millisecond)
 	return result
@@ -171,6 +172,15 @@ func (self *Bot) Shield() bool {
   } else {
     return false
   }
+}
+
+func (self *Bot) At(x, y int) *Bot {
+	for _, bot := range self.scene.bots {
+    if bot.x == x && bot.y == y {
+      return bot
+    }
+	}
+  return nil
 }
 
 func (self *Bot) LookingAt() []*Bot {

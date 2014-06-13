@@ -1,13 +1,14 @@
 package game
 
 import (
-	"../conn"
+	"botbattle/conn"
+	"encoding/json"
 	"time"
 )
 
 const (
-	ARENA_HEIGHT = 12
-	ARENA_WIDTH  = 24
+	ARENA_HEIGHT = 11
+	ARENA_WIDTH  = 23
 )
 
 type Scene struct {
@@ -40,14 +41,6 @@ func (self *Scene) bindActions() {
 	self.serv.Handle("shield", self.onShield)
 }
 
-type Status struct {
-  Id        int     `json:"id"`
-  X         int     `json:"x"`
-  Y         int     `json:"y"`
-  Rotation  int     `json:"rotation"`
-  Name      string  `json:"name"`
-  Health    int     `json:"health"`
-}
 
 func (self *Scene) onWebSocketConnected(client *conn.Client) {
   result := []Status{}
@@ -68,11 +61,14 @@ func (self *Scene) onRegister(client *conn.Client, name string) (int, int) {
 	return ARENA_WIDTH, ARENA_HEIGHT
 }
 
-func (self *Scene) onStatus(client *conn.Client) (int, int, int, int, int) {
+func (self *Scene) onStatus(client *conn.Client) string {
 	if bot := self.bots[client.Id]; bot != nil {
-		return bot.Status()
+	  json_resp, _ := json.Marshal(bot.Status())
+	  return string(json_resp)
 	}
-	return 0, 0, 0, 0, 0
+
+	json_resp, _ := json.Marshal(Status{})
+	return string(json_resp)
 }
 
 func (self *Scene) onBotDisconnect(client *conn.Client) {
@@ -138,12 +134,12 @@ func (self *Scene) onFireCannon(client *conn.Client) bool {
 	return false
 }
 
-func (self *Scene) onScan(client *conn.Client) [][]int {
+func (self *Scene) onScan(client *conn.Client) []string {
 	if bot := self.bots[client.Id]; bot != nil {
 		self.serv.Broadcast("scan", bot.client.Id)
 		return bot.Scan()
 	}
-	return [][]int{}
+	return []string{}
 }
 
 func (self *Scene) onShield(client *conn.Client) bool {
@@ -155,7 +151,7 @@ func (self *Scene) onShield(client *conn.Client) bool {
 
 func (self *Scene) Start() {
 	go self.serv.Listen(map[string]string{
-		"host":    "localhost:3333",
+		"host":    "0.0.0.0:3333",
 		"pattern": "/ws",
 	})
 }

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"./game"
 	"fmt"
 	"net/http"
+
+	"botbattle/game"
 )
 
 func main() {

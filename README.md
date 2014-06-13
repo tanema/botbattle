@@ -37,10 +37,16 @@ type BotClient
   func Register(name string) (arena_width, arena_height int)
   func MoveForward() (x, y int)
   func MoveBackward() (x, y int)
-  func RotateLeft() (rotation int)
-  func RotateRight() (rotation int)
+  func RotLeft() (rotation int)
+  func RotRight() (rotation int)
   func Scan() ([]*Status)
   func Status() (*Status)
   func Shield() bool
 
 ```
+
+
+TODO
+bot collision damage
+reconnect option?
+kill counter

@@ -2,10 +2,13 @@ package game
 
 import (
 	"testing"
+	"encoding/json"
 )
 
+var scene = NewScene()
+
 func TestRotateLeft(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 0, 5, 5, 100}
+	bot := &Bot{scene, nil, "tester", 0, 5, 5, 100, false, true}
 	if rot := bot.RotLeft(); rot != 270 {
 		t.Error("Rotation incorrect")
 	}
@@ -21,7 +24,7 @@ func TestRotateLeft(t *testing.T) {
 }
 
 func TestRotateRight(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 0, 5, 5, 100}
+	bot := &Bot{scene, nil, "tester", 0, 5, 5, 100, false, true}
 	if rot := bot.RotRight(); rot != 90 {
 		t.Error("Rotation incorrect")
 	}
@@ -37,7 +40,7 @@ func TestRotateRight(t *testing.T) {
 }
 
 func TestMoveForwardUp(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 90, 5, 5, 100}
+	bot := &Bot{scene, nil, "tester", 90, 5, 5, 100, false, true}
 	x, y := bot.MoveForward()
 	if x != 5 || y != 4 {
 		t.Error("MoveForwardUp Failed with ", x, y)
@@ -45,7 +48,7 @@ func TestMoveForwardUp(t *testing.T) {
 }
 
 func TestMoveForwardDown(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 270, 5, 5, 100}
+	bot := &Bot{scene, nil, "tester", 270, 5, 5, 100, false, true}
 	x, y := bot.MoveForward()
 	if x != 5 || y != 6 {
 		t.Error("TestMoveForwardDown Failed with ", x, y)
@@ -53,7 +56,7 @@ func TestMoveForwardDown(t *testing.T) {
 }
 
 func TestMoveForwardLeft(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 0, 5, 5, 100}
+	bot := &Bot{scene, nil, "tester", 0, 5, 5, 100, false, true}
 	x, y := bot.MoveForward()
 	if x != 4 || y != 5 {
 		t.Error("TestMoveForwardLeft Failed with ", x, y)
@@ -61,7 +64,7 @@ func TestMoveForwardLeft(t *testing.T) {
 }
 
 func TestMoveForwardRigth(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 180, 5, 5, 100}
+	bot := &Bot{scene, nil, "tester", 180, 5, 5, 100, false, true}
 	x, y := bot.MoveForward()
 	if x != 6 || y != 5 {
 		t.Error("TestMoveForwardRigth Failed with ", x, y)
@@ -69,7 +72,7 @@ func TestMoveForwardRigth(t *testing.T) {
 }
 
 func TestMoveBackwardUp(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 90, 5, 5, 100}
+	bot := &Bot{scene, nil, "tester", 90, 5, 5, 100, false, true}
 	x, y := bot.MoveBackward()
 	if x != 5 || y != 6 {
 		t.Error("MoveBackwardUp Failed with ", x, y)
@@ -77,7 +80,7 @@ func TestMoveBackwardUp(t *testing.T) {
 }
 
 func TestMoveBackwardDown(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 270, 5, 5, 100}
+	bot := &Bot{scene, nil, "tester", 270, 5, 5, 100, false, true}
 	x, y := bot.MoveBackward()
 	if x != 5 || y != 4 {
 		t.Error("TestMoveBackwardDown Failed with ", x, y)
@@ -85,7 +88,7 @@ func TestMoveBackwardDown(t *testing.T) {
 }
 
 func TestMoveBackwardLeft(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 0, 5, 5, 100}
+	bot := &Bot{scene, nil, "tester", 0, 5, 5, 100, false, true}
 	x, y := bot.MoveBackward()
 	if x != 6 || y != 5 {
 		t.Error("TestMoveBackwardLeft Failed with ", x, y)
@@ -93,7 +96,7 @@ func TestMoveBackwardLeft(t *testing.T) {
 }
 
 func TestMoveBackwardRigth(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 180, 5, 5, 100}
+	bot := &Bot{scene, nil, "tester", 180, 5, 5, 100, false, true}
 	x, y := bot.MoveBackward()
 	if x != 4 || y != 5 {
 		t.Error("TestMoveBackwardRigth Failed with ", x, y)
@@ -103,11 +106,11 @@ func TestMoveBackwardRigth(t *testing.T) {
 func botSetup() (*Scene, map[int]*Bot) {
 	scene := new(Scene)
 	scene.bots = map[int]*Bot{
-		1: &Bot{scene, nil, "tester0", 180, 5, 5, 100},
-		2: &Bot{scene, nil, "tester1", 90, 6, 5, 100},
-		3: &Bot{scene, nil, "tester2", 0, 7, 5, 100},
-		4: &Bot{scene, nil, "tester3", 270, 6, 3, 100},
-		5: &Bot{scene, nil, "tester4", 0, 6, 4, 100},
+		1: &Bot{scene, nil, "tester0", 180, 5, 5, 100, false, true},
+		2: &Bot{scene, nil, "tester1", 90, 6, 5, 100, false, true},
+		3: &Bot{scene, nil, "tester2", 0, 7, 5, 100, false, true},
+		4: &Bot{scene, nil, "tester3", 270, 6, 3, 100, false, true},
+		5: &Bot{scene, nil, "tester4", 0, 6, 4, 100, false, true},
 	}
 	return scene, scene.bots
 }
@@ -139,7 +142,11 @@ func TestScan(t *testing.T) {
 		t.Error("not enough results")
 		return
 	}
-	if result[0][0] != bot[2].x || result[0][1] != bot[2].y {
+
+  my_status := &Status{}
+	json.Unmarshal([]byte(result[0]), my_status)
+
+	if my_status.X != bot[2].x || my_status.Y != bot[2].y {
 		t.Error("got incorrect ordering")
 		return
 	}

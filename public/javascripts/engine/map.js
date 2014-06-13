@@ -137,7 +137,7 @@ Map.prototype.drawHealthBars = function (ctx){
     ctx.save()
     ctx.beginPath();
     ctx.moveTo(34, (i*interval)+(32/2)+2);
-    ctx.lineTo((32+(32*(bot.health/25))), (i*interval)+(32/2)+2);
+    ctx.lineTo((32+(128(bot.health/100))), (i*interval)+(32/2)+2);
     ctx.lineWidth = 28;
     ctx.strokeStyle = 'rgba(255,0,0,0.7)';
     ctx.stroke();

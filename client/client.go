@@ -1,7 +1,7 @@
 package client
 
 import (
-	"../conn"
+	"botbattle/conn"
 	"bufio"
 	"encoding/json"
 	"fmt"
@@ -15,12 +15,14 @@ type BotClient struct {
   ArenaWidth  int
 }
 
+//duplicated here so the client user does not have to import game
 type Status struct {
-  Id           int
-	X            int
-	Y            int
-	Rotation     int
-	Health       int
+  Id        int     `json:"id"`
+  X         int     `json:"x"`
+  Y         int     `json:"y"`
+  Rotation  int     `json:"rotation"`
+  Name      string  `json:"name"`
+  Health    int     `json:"health"`
 }
 
 func NewBotClient(host, name string) *BotClient {
@@ -40,12 +42,9 @@ func NewBotClient(host, name string) *BotClient {
 
 func (self *BotClient) Status() *Status {
 	resp := self.request("status")
-	id := int(resp.EventData[0].(float64))
-	x := int(resp.EventData[1].(float64))
-	y := int(resp.EventData[2].(float64))
-	rotation := int(resp.EventData[3].(float64))
-	health := int(resp.EventData[4].(float64))
-	return &Status{id, x, y, rotation, health}
+  my_status := &Status{}
+	json.Unmarshal([]byte(resp.EventData[0].(string)), my_status)
+	return my_status
 }
 
 func (self *BotClient) RotLeft() (rot int) {
@@ -79,14 +78,9 @@ func (self *BotClient) Scan() []*Status {
 	result := []*Status{}
 	if statuses, ok := resp.EventData[0].([]interface{}); ok {
 		for _, state_interface := range statuses {
-			state_array := state_interface.([]interface{})
-			new_status := new(Status)
-			new_status.Id = int(state_array[0].(float64))
-			new_status.X = int(state_array[1].(float64))
-			new_status.Y = int(state_array[2].(float64))
-			new_status.Rotation = int(state_array[3].(float64))
-			new_status.Health = int(state_array[4].(float64))
-			result = append(result, new_status)
+      bot_status := &Status{}
+      json.Unmarshal([]byte(state_interface.(string)), bot_status)
+			result = append(result, bot_status)
 		}
 	}
 	return result
