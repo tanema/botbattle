@@ -3,6 +3,7 @@ package game
 import (
 	"testing"
 	"encoding/json"
+	"botbattle/conn"
 )
 
 var scene = NewScene()
@@ -39,10 +40,47 @@ func TestRotateRight(t *testing.T) {
 	}
 }
 
+func TestTopBoundary(t *testing.T) {
+	bot := &Bot{nil, nil, "tester", 90, 5, 1, 100, false, true}
+	bot.MoveForward()
+	x, y := bot.MoveForward()
+	if x != 5 || y != 0 {
+		t.Error("TestTopBoundary Failed with ", x, y)
+	}
+}
+
+func TestBottomBoundary(t *testing.T) {
+	bot := &Bot{nil, nil, "tester", 270, 5, 10, 100, false, true}
+	bot.MoveForward()
+	x, y := bot.MoveForward()
+	if x != 5 || y != 11 {
+		t.Error("TestBottomBoundary Failed with ", x, y)
+	}
+}
+
+func TestLeftBoundary(t *testing.T) {
+	bot := &Bot{nil, nil, "tester", 0, 1, 5, 100, false, true}
+	bot.MoveForward()
+	x, y := bot.MoveForward()
+	if x != 0 || y != 5 {
+		t.Error("TestLeftBoundary Failed with ", x, y)
+	}
+}
+
+
+func TestRightBoundary(t *testing.T) {
+	bot := &Bot{nil, nil, "tester", 180, 22, 5, 100, false, true}
+	bot.MoveForward()
+	x, y := bot.MoveForward()
+	if x != 23 || y != 5 {
+		t.Error("TestRightBoundary Failed with ", x, y)
+	}
+}
+
 func TestMoveForwardUp(t *testing.T) {
 	bot := &Bot{scene, nil, "tester", 90, 5, 5, 100, false, true}
 	x, y := bot.MoveForward()
-	if x != 5 || y != 4 {
+	if x != 5 || y != 0 {
 		t.Error("MoveForwardUp Failed with ", x, y)
 	}
 }
@@ -103,6 +141,12 @@ func TestMoveBackwardRigth(t *testing.T) {
 	}
 }
 
+//###########
+//###########
+//######4####
+//######5####
+//#####123###
+//###########
 func botSetup() (*Scene, map[int]*Bot) {
 	scene := new(Scene)
 	scene.bots = map[int]*Bot{
@@ -111,6 +155,11 @@ func botSetup() (*Scene, map[int]*Bot) {
 		3: &Bot{scene, nil, "tester2", 0, 7, 5, 100, false, true},
 		4: &Bot{scene, nil, "tester3", 270, 6, 3, 100, false, true},
 		5: &Bot{scene, nil, "tester4", 0, 6, 4, 100, false, true},
+    1: &Bot{scene, &conn.Client{Id: 1}, "tester0", 180, 5, 5, 100, false, true},
+		2: &Bot{scene, &conn.Client{Id: 2}, "tester1", 90, 6, 5, 100, false, true},
+		3: &Bot{scene, &conn.Client{Id: 3}, "tester2", 0, 7, 5, 100, false, true},
+		4: &Bot{scene, &conn.Client{Id: 4}, "tester3", 270, 6, 3, 100, false, true},
+		5: &Bot{scene, &conn.Client{Id: 5}, "tester4", 0, 6, 4, 100, false, true},
 	}
 	return scene, scene.bots
 }
@@ -118,19 +167,19 @@ func botSetup() (*Scene, map[int]*Bot) {
 func TestLookingAt(t *testing.T) {
 	_, bot := botSetup()
 	if bots := bot[1].LookingAt(); len(bots) != 2 || bots[0] != bot[2] {
-		t.Error("bot1 cants see bot 2")
+		t.Error("bot1 cant see bot 2")
 		return
 	}
 	if bots := bot[2].LookingAt(); len(bots) != 2 || bots[0] != bot[5] {
-		t.Error("bot2 cants see bot 5")
+		t.Error("bot2 cant see bot 5")
 		return
 	}
 	if bots := bot[3].LookingAt(); len(bots) != 2 || bots[0] != bot[2] {
-		t.Error("bot3 cants see bot 2")
+		t.Error("bot3 cant see bot 2")
 		return
 	}
 	if bots := bot[4].LookingAt(); len(bots) != 2 || bots[0] != bot[5] {
-		t.Error("bot4 cants see bot 5")
+		t.Error("bot4 cant see bot 5")
 		return
 	}
 }
