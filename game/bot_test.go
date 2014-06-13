@@ -6,10 +6,15 @@ import (
 	"botbattle/conn"
 )
 
-var scene = NewScene()
+func NewTestBot(name string, rot, x, y int) *Bot {
+  scene := NewScene()
+	bot := &Bot{scene, &conn.Client{Id: 1}, name, rot, x, y, 100, false, true}
+	scene.bots[bot.client.Id] = bot
+  return bot
+}
 
 func TestRotateLeft(t *testing.T) {
-	bot := &Bot{scene, nil, "tester", 0, 5, 5, 100, false, true}
+	bot := NewTestBot("test", 0, 5, 5)
 	if rot := bot.RotLeft(); rot != 270 {
 		t.Error("Rotation incorrect")
 	}
@@ -25,7 +30,7 @@ func TestRotateLeft(t *testing.T) {
 }
 
 func TestRotateRight(t *testing.T) {
-	bot := &Bot{scene, nil, "tester", 0, 5, 5, 100, false, true}
+	bot := NewTestBot("test", 0, 5, 5)
 	if rot := bot.RotRight(); rot != 90 {
 		t.Error("Rotation incorrect")
 	}
@@ -41,7 +46,7 @@ func TestRotateRight(t *testing.T) {
 }
 
 func TestTopBoundary(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 90, 5, 1, 100, false, true}
+	bot := NewTestBot("test", 90, 5, 1)
 	bot.MoveForward()
 	x, y := bot.MoveForward()
 	if x != 5 || y != 0 {
@@ -50,7 +55,7 @@ func TestTopBoundary(t *testing.T) {
 }
 
 func TestBottomBoundary(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 270, 5, 10, 100, false, true}
+	bot := NewTestBot("test", 270, 5, 10)
 	bot.MoveForward()
 	x, y := bot.MoveForward()
 	if x != 5 || y != 11 {
@@ -59,7 +64,7 @@ func TestBottomBoundary(t *testing.T) {
 }
 
 func TestLeftBoundary(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 0, 1, 5, 100, false, true}
+	bot := NewTestBot("test", 0, 1, 5)
 	bot.MoveForward()
 	x, y := bot.MoveForward()
 	if x != 0 || y != 5 {
@@ -69,7 +74,7 @@ func TestLeftBoundary(t *testing.T) {
 
 
 func TestRightBoundary(t *testing.T) {
-	bot := &Bot{nil, nil, "tester", 180, 22, 5, 100, false, true}
+	bot := NewTestBot("test", 180, 22, 5)
 	bot.MoveForward()
 	x, y := bot.MoveForward()
 	if x != 23 || y != 5 {
@@ -78,15 +83,15 @@ func TestRightBoundary(t *testing.T) {
 }
 
 func TestMoveForwardUp(t *testing.T) {
-	bot := &Bot{scene, nil, "tester", 90, 5, 5, 100, false, true}
+	bot := NewTestBot("test", 90, 5, 5)
 	x, y := bot.MoveForward()
-	if x != 5 || y != 0 {
+	if x != 5 || y != 4 {
 		t.Error("MoveForwardUp Failed with ", x, y)
 	}
 }
 
 func TestMoveForwardDown(t *testing.T) {
-	bot := &Bot{scene, nil, "tester", 270, 5, 5, 100, false, true}
+	bot := NewTestBot("test", 270, 5, 5)
 	x, y := bot.MoveForward()
 	if x != 5 || y != 6 {
 		t.Error("TestMoveForwardDown Failed with ", x, y)
@@ -94,7 +99,7 @@ func TestMoveForwardDown(t *testing.T) {
 }
 
 func TestMoveForwardLeft(t *testing.T) {
-	bot := &Bot{scene, nil, "tester", 0, 5, 5, 100, false, true}
+	bot := NewTestBot("test", 0, 5, 5)
 	x, y := bot.MoveForward()
 	if x != 4 || y != 5 {
 		t.Error("TestMoveForwardLeft Failed with ", x, y)
@@ -102,7 +107,7 @@ func TestMoveForwardLeft(t *testing.T) {
 }
 
 func TestMoveForwardRigth(t *testing.T) {
-	bot := &Bot{scene, nil, "tester", 180, 5, 5, 100, false, true}
+	bot := NewTestBot("test", 180, 5, 5)
 	x, y := bot.MoveForward()
 	if x != 6 || y != 5 {
 		t.Error("TestMoveForwardRigth Failed with ", x, y)
@@ -110,7 +115,7 @@ func TestMoveForwardRigth(t *testing.T) {
 }
 
 func TestMoveBackwardUp(t *testing.T) {
-	bot := &Bot{scene, nil, "tester", 90, 5, 5, 100, false, true}
+	bot := NewTestBot("test", 90, 5, 5)
 	x, y := bot.MoveBackward()
 	if x != 5 || y != 6 {
 		t.Error("MoveBackwardUp Failed with ", x, y)
@@ -118,7 +123,7 @@ func TestMoveBackwardUp(t *testing.T) {
 }
 
 func TestMoveBackwardDown(t *testing.T) {
-	bot := &Bot{scene, nil, "tester", 270, 5, 5, 100, false, true}
+	bot := NewTestBot("test", 270, 5, 5)
 	x, y := bot.MoveBackward()
 	if x != 5 || y != 4 {
 		t.Error("TestMoveBackwardDown Failed with ", x, y)
@@ -126,7 +131,7 @@ func TestMoveBackwardDown(t *testing.T) {
 }
 
 func TestMoveBackwardLeft(t *testing.T) {
-	bot := &Bot{scene, nil, "tester", 0, 5, 5, 100, false, true}
+	bot := NewTestBot("test", 0, 5, 5)
 	x, y := bot.MoveBackward()
 	if x != 6 || y != 5 {
 		t.Error("TestMoveBackwardLeft Failed with ", x, y)
@@ -134,7 +139,7 @@ func TestMoveBackwardLeft(t *testing.T) {
 }
 
 func TestMoveBackwardRigth(t *testing.T) {
-	bot := &Bot{scene, nil, "tester", 180, 5, 5, 100, false, true}
+	bot := NewTestBot("test", 180, 5, 5)
 	x, y := bot.MoveBackward()
 	if x != 4 || y != 5 {
 		t.Error("TestMoveBackwardRigth Failed with ", x, y)
@@ -150,11 +155,6 @@ func TestMoveBackwardRigth(t *testing.T) {
 func botSetup() (*Scene, map[int]*Bot) {
 	scene := new(Scene)
 	scene.bots = map[int]*Bot{
-		1: &Bot{scene, nil, "tester0", 180, 5, 5, 100, false, true},
-		2: &Bot{scene, nil, "tester1", 90, 6, 5, 100, false, true},
-		3: &Bot{scene, nil, "tester2", 0, 7, 5, 100, false, true},
-		4: &Bot{scene, nil, "tester3", 270, 6, 3, 100, false, true},
-		5: &Bot{scene, nil, "tester4", 0, 6, 4, 100, false, true},
     1: &Bot{scene, &conn.Client{Id: 1}, "tester0", 180, 5, 5, 100, false, true},
 		2: &Bot{scene, &conn.Client{Id: 2}, "tester1", 90, 6, 5, 100, false, true},
 		3: &Bot{scene, &conn.Client{Id: 3}, "tester2", 0, 7, 5, 100, false, true},

@@ -97,15 +97,15 @@ func (self *Bot) MoveBackward() (int, int) {
 			self.y++
 		}
 	case 270:
-		if self.y > 0 && self.At(self.x, self.y-1) != nil {
+		if self.y > 0 && self.At(self.x, self.y-1) == nil {
 			self.y--
 		}
 	case 0:
-		if self.x < ARENA_WIDTH && self.At(self.x+1, self.y) != nil {
+		if self.x < ARENA_WIDTH && self.At(self.x+1, self.y) == nil {
 			self.x++
 		}
 	case 180:
-		if self.x > 0  && self.At(self.x-1, self.y) != nil {
+		if self.x > 0  && self.At(self.x-1, self.y) == nil {
 			self.x--
 		}
 	}
