@@ -100,5 +100,3 @@ kill counter
 - Will return true if the shield was enabled
 - has a warmup time of 5000 millesecond
 - will remain on for 3000 milleseconds
-
->>>>>>> 7a1328ea3b37f5d42ae42653f3a64380c953e97d
