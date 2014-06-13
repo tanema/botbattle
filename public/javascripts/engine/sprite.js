@@ -9,6 +9,7 @@ function Sprite(display_object_options, map, layer){
   this.x = display_object_options.x || 0;
   this.y = display_object_options.y || 0;
   this.health = display_object_options.health || 100;
+  this.killcount = display_object_options.killcount || 0; 
 
   this.is_scanning = false;
   this.is_firing_cannon = false;

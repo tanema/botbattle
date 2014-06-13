@@ -45,7 +45,7 @@ func (self *Scene) bindActions() {
 func (self *Scene) onWebSocketConnected(client *conn.Client) {
   result := []Status{}
   for _, bot := range self.bots {
-    result = append(result, Status{bot.client.Id, bot.x, bot.y, bot.rotation, bot.name, bot.health})
+    result = append(result, Status{bot.client.Id, bot.x, bot.y, bot.rotation, bot.name, bot.health, bot.killcount})
   }
   go func(){
 	  time.Sleep(1000 * time.Millisecond)
@@ -82,40 +82,44 @@ func (self *Scene) KillBot(bot *Bot) {
 	delete(self.bots, bot.client.Id)
 }
 
-func (self *Scene) onBotRotLeft(client *conn.Client) int {
+func (self *Scene) onBotRotLeft(client *conn.Client) string {
 	if bot := self.bots[client.Id]; bot != nil {
-    rot := bot.RotLeft()
-		self.serv.Broadcast("rotate", bot.client.Id, rot)
-		return rot
+    status := bot.RotLeft()
+		self.serv.Broadcast("rotate", bot.client.Id, status.Rotation)
+	  json_resp, _ := json.Marshal(status)
+	  return string(json_resp)
 	}
-	return 0
+  return ""
 }
 
-func (self *Scene) onBotRotRight(client *conn.Client) int {
+func (self *Scene) onBotRotRight(client *conn.Client) string {
 	if bot := self.bots[client.Id]; bot != nil {
-    rot := bot.RotRight()
-		self.serv.Broadcast("rotate", bot.client.Id, rot)
-		return rot
+    status := bot.RotRight()
+		self.serv.Broadcast("rotate", bot.client.Id, status.Rotation)
+	  json_resp, _ := json.Marshal(status)
+	  return string(json_resp)
 	}
-	return 0
+  return ""
 }
 
-func (self *Scene) onBotMoveForward(client *conn.Client) (int, int) {
+func (self *Scene) onBotMoveForward(client *conn.Client) string {
 	if bot := self.bots[client.Id]; bot != nil {
-    x, y := bot.MoveForward()
-		self.serv.Broadcast("move", bot.client.Id, x, y)
-		return x, y
+    status := bot.MoveForward()
+		self.serv.Broadcast("move", bot.client.Id, status.X, status.Y)
+    json_resp, _ := json.Marshal(status)
+    return string(json_resp)
 	}
-	return 0, 0
+  return ""
 }
 
-func (self *Scene) onBotMoveBackward(client *conn.Client) (int, int) {
+func (self *Scene) onBotMoveBackward(client *conn.Client) string {
 	if bot := self.bots[client.Id]; bot != nil {
-    x, y := bot.MoveBackward()
-		self.serv.Broadcast("move", bot.client.Id, x, y)
-		return x, y
+    status := bot.MoveBackward()
+		self.serv.Broadcast("move", bot.client.Id, status.X, status.Y)
+    json_resp, _ := json.Marshal(status)
+    return string(json_resp)
 	}
-	return 0, 0
+  return ""
 }
 
 func (self *Scene) onFireGun(client *conn.Client) bool {

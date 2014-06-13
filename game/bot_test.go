@@ -8,39 +8,39 @@ import (
 
 func NewTestBot(name string, rot, x, y int) *Bot {
   scene := NewScene()
-	bot := &Bot{scene, &conn.Client{Id: 1}, name, rot, x, y, 100, false, true}
+	bot := &Bot{scene, &conn.Client{Id: 1}, name, rot, x, y, 100, 0, false, true}
 	scene.bots[bot.client.Id] = bot
   return bot
 }
 
 func TestRotateLeft(t *testing.T) {
 	bot := NewTestBot("test", 0, 5, 5)
-	if rot := bot.RotLeft(); rot != 270 {
+	if status := bot.RotLeft(); status.Rotation != 270 {
 		t.Error("Rotation incorrect")
 	}
-	if rot := bot.RotLeft(); rot != 180 {
+	if status := bot.RotLeft(); status.Rotation != 180 {
 		t.Error("Rotation incorrect")
 	}
-	if rot := bot.RotLeft(); rot != 90 {
+	if status := bot.RotLeft(); status.Rotation != 90 {
 		t.Error("Rotation incorrect")
 	}
-	if rot := bot.RotLeft(); rot != 0 {
+	if status := bot.RotLeft(); status.Rotation != 0 {
 		t.Error("Rotation incorrect")
 	}
 }
 
 func TestRotateRight(t *testing.T) {
 	bot := NewTestBot("test", 0, 5, 5)
-	if rot := bot.RotRight(); rot != 90 {
+	if status := bot.RotRight(); status.Rotation != 90 {
 		t.Error("Rotation incorrect")
 	}
-	if rot := bot.RotRight(); rot != 180 {
+	if status := bot.RotRight(); status.Rotation != 180 {
 		t.Error("Rotation incorrect")
 	}
-	if rot := bot.RotRight(); rot != 270 {
+	if status := bot.RotRight(); status.Rotation != 270 {
 		t.Error("Rotation incorrect")
 	}
-	if rot := bot.RotRight(); rot != 0 {
+	if status := bot.RotRight(); status.Rotation != 0 {
 		t.Error("Rotation incorrect")
 	}
 }
@@ -48,27 +48,27 @@ func TestRotateRight(t *testing.T) {
 func TestTopBoundary(t *testing.T) {
 	bot := NewTestBot("test", 90, 5, 1)
 	bot.MoveForward()
-	x, y := bot.MoveForward()
-	if x != 5 || y != 0 {
-		t.Error("TestTopBoundary Failed with ", x, y)
+	status := bot.MoveForward()
+	if status.X != 5 || status.Y != 0 {
+		t.Error("TestTopBoundary Failed with ", status.X, status.Y)
 	}
 }
 
 func TestBottomBoundary(t *testing.T) {
 	bot := NewTestBot("test", 270, 5, 10)
 	bot.MoveForward()
-	x, y := bot.MoveForward()
-	if x != 5 || y != 11 {
-		t.Error("TestBottomBoundary Failed with ", x, y)
+	status := bot.MoveForward()
+	if status.X != 5 || status.Y != 11 {
+		t.Error("TestBottomBoundary Failed with ", status.X, status.Y)
 	}
 }
 
 func TestLeftBoundary(t *testing.T) {
 	bot := NewTestBot("test", 0, 1, 5)
 	bot.MoveForward()
-	x, y := bot.MoveForward()
-	if x != 0 || y != 5 {
-		t.Error("TestLeftBoundary Failed with ", x, y)
+	status := bot.MoveForward()
+	if status.X != 0 || status.Y != 5 {
+		t.Error("TestLeftBoundary Failed with ", status.X, status.Y)
 	}
 }
 
@@ -76,73 +76,73 @@ func TestLeftBoundary(t *testing.T) {
 func TestRightBoundary(t *testing.T) {
 	bot := NewTestBot("test", 180, 22, 5)
 	bot.MoveForward()
-	x, y := bot.MoveForward()
-	if x != 23 || y != 5 {
-		t.Error("TestRightBoundary Failed with ", x, y)
+	status := bot.MoveForward()
+	if status.X != 23 || status.Y != 5 {
+		t.Error("TestRightBoundary Failed with ", status.X, status.Y)
 	}
 }
 
 func TestMoveForwardUp(t *testing.T) {
 	bot := NewTestBot("test", 90, 5, 5)
-	x, y := bot.MoveForward()
-	if x != 5 || y != 4 {
-		t.Error("MoveForwardUp Failed with ", x, y)
+	status := bot.MoveForward()
+	if status.X != 5 || status.Y != 4 {
+		t.Error("MoveForwardUp Failed with ", status.X, status.Y)
 	}
 }
 
 func TestMoveForwardDown(t *testing.T) {
 	bot := NewTestBot("test", 270, 5, 5)
-	x, y := bot.MoveForward()
-	if x != 5 || y != 6 {
-		t.Error("TestMoveForwardDown Failed with ", x, y)
+	status := bot.MoveForward()
+	if status.X != 5 || status.Y != 6 {
+		t.Error("TestMoveForwardDown Failed with ", status.X, status.Y)
 	}
 }
 
 func TestMoveForwardLeft(t *testing.T) {
 	bot := NewTestBot("test", 0, 5, 5)
-	x, y := bot.MoveForward()
-	if x != 4 || y != 5 {
-		t.Error("TestMoveForwardLeft Failed with ", x, y)
+	status := bot.MoveForward()
+	if status.X != 4 || status.Y != 5 {
+		t.Error("TestMoveForwardLeft Failed with ", status.X, status.Y)
 	}
 }
 
 func TestMoveForwardRigth(t *testing.T) {
 	bot := NewTestBot("test", 180, 5, 5)
-	x, y := bot.MoveForward()
-	if x != 6 || y != 5 {
-		t.Error("TestMoveForwardRigth Failed with ", x, y)
+	status := bot.MoveForward()
+	if status.X != 6 || status.Y != 5 {
+		t.Error("TestMoveForwardRigth Failed with ", status.X, status.Y)
 	}
 }
 
 func TestMoveBackwardUp(t *testing.T) {
 	bot := NewTestBot("test", 90, 5, 5)
-	x, y := bot.MoveBackward()
-	if x != 5 || y != 6 {
-		t.Error("MoveBackwardUp Failed with ", x, y)
+	status := bot.MoveBackward()
+	if status.X != 5 || status.Y != 6 {
+		t.Error("MoveBackwardUp Failed with ", status.X, status.Y)
 	}
 }
 
 func TestMoveBackwardDown(t *testing.T) {
 	bot := NewTestBot("test", 270, 5, 5)
-	x, y := bot.MoveBackward()
-	if x != 5 || y != 4 {
-		t.Error("TestMoveBackwardDown Failed with ", x, y)
+	status := bot.MoveBackward()
+	if status.X != 5 || status.Y != 4 {
+		t.Error("TestMoveBackwardDown Failed with ", status.X, status.Y)
 	}
 }
 
 func TestMoveBackwardLeft(t *testing.T) {
 	bot := NewTestBot("test", 0, 5, 5)
-	x, y := bot.MoveBackward()
-	if x != 6 || y != 5 {
-		t.Error("TestMoveBackwardLeft Failed with ", x, y)
+	status := bot.MoveBackward()
+	if status.X != 6 || status.Y != 5 {
+		t.Error("TestMoveBackwardLeft Failed with ", status.X, status.Y)
 	}
 }
 
 func TestMoveBackwardRigth(t *testing.T) {
 	bot := NewTestBot("test", 180, 5, 5)
-	x, y := bot.MoveBackward()
-	if x != 4 || y != 5 {
-		t.Error("TestMoveBackwardRigth Failed with ", x, y)
+	status := bot.MoveBackward()
+	if status.X != 4 || status.Y != 5 {
+		t.Error("TestMoveBackwardRigth Failed with ", status.X, status.Y)
 	}
 }
 
@@ -155,11 +155,11 @@ func TestMoveBackwardRigth(t *testing.T) {
 func botSetup() (*Scene, map[int]*Bot) {
 	scene := new(Scene)
 	scene.bots = map[int]*Bot{
-    1: &Bot{scene, &conn.Client{Id: 1}, "tester0", 180, 5, 5, 100, false, true},
-		2: &Bot{scene, &conn.Client{Id: 2}, "tester1", 90, 6, 5, 100, false, true},
-		3: &Bot{scene, &conn.Client{Id: 3}, "tester2", 0, 7, 5, 100, false, true},
-		4: &Bot{scene, &conn.Client{Id: 4}, "tester3", 270, 6, 3, 100, false, true},
-		5: &Bot{scene, &conn.Client{Id: 5}, "tester4", 0, 6, 4, 100, false, true},
+    1: &Bot{scene, &conn.Client{Id: 1}, "tester0", 180, 5, 5, 100, 0, false, true},
+		2: &Bot{scene, &conn.Client{Id: 2}, "tester1", 90, 6, 5, 100, 0, false, true},
+		3: &Bot{scene, &conn.Client{Id: 3}, "tester2", 0, 7, 5, 100, 0, false, true},
+		4: &Bot{scene, &conn.Client{Id: 4}, "tester3", 270, 6, 3, 100, 0, false, true},
+		5: &Bot{scene, &conn.Client{Id: 5}, "tester4", 0, 6, 4, 100, 0, false, true},
 	}
 	return scene, scene.bots
 }

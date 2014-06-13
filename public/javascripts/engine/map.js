@@ -55,6 +55,7 @@ Map.prototype.register_socket_events = function(){
   this.socket.on("scan",          function(bot_id){ self.on_scan(bot_id)})
   this.socket.on("shield",        function(bot_id, on){ self.on_shield(bot_id, on)})
   this.socket.on("bot hit",       function(bot_id, dmg){ self.on_hit(bot_id, dmg)})
+  this.socket.on("bot notch",       function(bot_id, killcount){ self.on_notch(bot_id, killcount)})
 };
 
 Map.prototype.loaded = function (){
@@ -137,7 +138,7 @@ Map.prototype.drawHealthBars = function (ctx){
     ctx.save()
     ctx.beginPath();
     ctx.moveTo(34, (i*interval)+(32/2)+2);
-    ctx.lineTo((32+(128(bot.health/100))), (i*interval)+(32/2)+2);
+    ctx.lineTo((32+(128*(bot.health/100))), (i*interval)+(32/2)+2);
     ctx.lineWidth = 28;
     ctx.strokeStyle = 'rgba(255,0,0,0.7)';
     ctx.stroke();
@@ -148,6 +149,7 @@ Map.prototype.drawHealthBars = function (ctx){
     ctx.drawImage(this.spritesheet.get(51).img, 96, (i*interval))
     ctx.drawImage(this.spritesheet.get(52).img, 128, (i*interval))
     ctx.fillText(bot.name, 38, (i*interval)+26);
+    ctx.fillText("kills: " + bot.killcount, 165, (i*interval)+26);
     ctx.restore()
   }
 }
@@ -161,7 +163,8 @@ Map.prototype.on_connect = function(bots){
       y: bot.y,
       name: bot.name,
       rotation: bot.rotation,
-      health: bot.health
+      health: bot.health,
+      killcount: bot.killcount
     }, this, this.layers["players"])
   }
 }
@@ -216,6 +219,11 @@ Map.prototype.on_scan = function(bot_id){
 Map.prototype.on_hit = function(bot_id, dmg){
   try{
     this.sprites[bot_id].health -= dmg
+  } catch(e){}
+}
+Map.prototype.on_notch = function(bot_id, killcount){
+  try{
+    this.sprites[bot_id].killcount = killcount
   } catch(e){}
 }
 

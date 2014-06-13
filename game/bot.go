@@ -15,6 +15,9 @@ const (
 	CANNON_WAIT = 3000
   SHIELD_ON   = 3000
   SHIELD_POWER_UP = 5000
+  GUN_DMG = 25
+  CANNON_DMG = 50
+  COLLISION_DMG = 5
 )
 
 type Bot struct {
@@ -25,6 +28,7 @@ type Bot struct {
 	x        int          `json:"x"`
 	y        int          `json:"y"`
 	health   int          `json:"health"`
+  killcount   int       `json:"killcount"`
   ShieldOn    bool
   ShieldReady bool
 }
@@ -38,82 +42,99 @@ func NewBot(scene *Scene, new_client *conn.Client, name string) *Bot {
 		rand.Intn(ARENA_WIDTH),
 		rand.Intn(ARENA_HEIGHT),
 		100,
+    0,
     false,
     true,
 	}
 }
 
 func (self *Bot) Status() *Status {
-	return &Status{self.client.Id, self.x, self.y, self.rotation, self.name, self.health}
+	return &Status{self.client.Id, self.x, self.y, self.rotation, self.name, self.health, self.killcount}
 }
 
-func (self *Bot) RotRight() int {
+func (self *Bot) RotRight() *Status {
 	if self.rotation == 270 {
 		self.rotation = 0
 	} else {
 		self.rotation += 90
 	}
 	time.Sleep(MOVES_SPEED * time.Millisecond)
-	return self.rotation
+	return self.Status()
 }
 
-func (self *Bot) RotLeft() int {
+func (self *Bot) RotLeft() *Status {
 	if self.rotation == 0 {
 		self.rotation = 270
 	} else {
 		self.rotation -= 90
 	}
 	time.Sleep(MOVES_SPEED * time.Millisecond)
-	return self.rotation
+	return self.Status()
 }
 
-func (self *Bot) MoveForward() (int, int) {
+func (self *Bot) MoveForward() *Status {
 	switch self.rotation {
 	case 90:
 		if self.y > 0 && self.At(self.x, self.y-1) == nil {
 			self.y--
-		}
+		} else if self.At(self.x, self.y-1) != nil {
+      self.Hit(COLLISION_DMG)
+    }
 	case 270:
 		if self.y < ARENA_HEIGHT && self.At(self.x, self.y+1) == nil {
 			self.y++
-		}
+		} else if self.At(self.x, self.y+1) != nil {
+      self.Hit(COLLISION_DMG)
+    }
 	case 0:
 		if self.x > 0 && self.At(self.x-1, self.y) == nil {
 			self.x--
-		}
+		} else if self.At(self.x-1, self.y) != nil {
+      self.Hit(COLLISION_DMG)
+    }
 	case 180:
 		if self.x < ARENA_WIDTH && self.At(self.x+1, self.y) == nil {
 			self.x++
-		}
+		} else if self.At(self.x+1, self.y) != nil {
+      self.Hit(COLLISION_DMG)
+    }
 	}
 	time.Sleep(MOVES_SPEED * time.Millisecond)
-	return self.x, self.y
+	return self.Status()
 }
 
-func (self *Bot) MoveBackward() (int, int) {
+func (self *Bot) MoveBackward() *Status {
 	switch self.rotation {
 	case 90:
 		if self.y < ARENA_HEIGHT && self.At(self.x, self.y+1) == nil {
 			self.y++
-		}
+		} else if self.At(self.x, self.y+1) != nil {
+      self.Hit(COLLISION_DMG)
+    }
 	case 270:
 		if self.y > 0 && self.At(self.x, self.y-1) == nil {
 			self.y--
-		}
+		}  else if self.At(self.x, self.y-1) != nil {
+      self.Hit(COLLISION_DMG)
+    }
 	case 0:
 		if self.x < ARENA_WIDTH && self.At(self.x+1, self.y) == nil {
 			self.x++
-		}
+		} else if self.At(self.x+1, self.y) != nil {
+      self.Hit(COLLISION_DMG)
+    }
 	case 180:
 		if self.x > 0  && self.At(self.x-1, self.y) == nil {
 			self.x--
-		}
+		} else if self.At(self.x-1, self.y) == nil {
+      self.Hit(COLLISION_DMG)
+    }
 	}
 	time.Sleep(MOVES_SPEED * time.Millisecond)
-	return self.x, self.y
+	return self.Status()
 }
 
-func (self *Bot) Hit(dmg int) {
+func (self *Bot) Hit(dmg int) bool {
   if self.ShieldOn {
     self.health -= dmg/2
   } else {
@@ -124,13 +145,18 @@ func (self *Bot) Hit(dmg int) {
 	}
 	if self.health <= 0 {
 		self.scene.KillBot(self)
+    return true
 	}
+  return false
 }
 
 func (self *Bot) FireGun() bool {
 	targets := self.LookingAt()
 	if len(targets) > 0 {
-		targets[0].Hit(25)
+		if targets[0].Hit(GUN_DMG) {
+      self.killcount++
+		  self.scene.serv.Broadcast("bot notch", self.client.Id, self.killcount)
+    }
 	}
 	time.Sleep(GUN_WAIT * time.Millisecond)
 	return len(targets) > 0
@@ -139,7 +165,10 @@ func (self *Bot) FireGun() bool {
 func (self *Bot) FireCannon() bool {
 	targets := self.LookingAt()
 	if len(targets) > 0 {
-		targets[0].Hit(50)
+		if targets[0].Hit(CANNON_DMG) {
+      self.killcount++
+		  self.scene.serv.Broadcast("bot notch", self.client.Id, self.killcount)
+    }
 	}
 	time.Sleep(CANNON_WAIT * time.Millisecond)
 	return len(targets) > 0

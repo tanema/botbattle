@@ -7,4 +7,5 @@ type Status struct {
   Rotation  int     `json:"rotation"`
   Name      string  `json:"name"`
   Health    int     `json:"health"`
+  KillCount int     `json:"kill_count"`
 }

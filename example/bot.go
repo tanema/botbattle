@@ -2,6 +2,7 @@ package main
 
 import (
 	"botbattle/client"
+  "fmt"
 )
 
 type Bot struct {
@@ -9,17 +10,15 @@ type Bot struct {
 }
 
 func (self *Bot) ScanArena(){
-  first_status := self.Status()
+  first_status, _ := self.Status()
   last_x := first_status.X
   last_y := first_status.Y
-  self.MoveForward()
   for {
-    if status := self.Status(); last_x != status.X || last_y != status.Y {
+    if status, err := self.MoveForward(); err == nil && (last_x != status.X || last_y != status.Y) {
       self.ScanAndShoot()
       self.ScanAndShoot()
       self.ScanAndShoot()
       self.ScanAndShoot()
-      self.MoveForward()
       last_x = status.X
       last_y = status.Y
     } else {
@@ -29,7 +28,7 @@ func (self *Bot) ScanArena(){
 }
 
 func (self *Bot) ScanAndShoot(){
-  bots := self.Scan()
+  bots, _ := self.Scan()
   if len(bots) > 0 {
     self.FireCannon()
   }
@@ -41,7 +40,13 @@ func (self *Bot) Chase(){
 }
 
 func main() {
-  bot := &Bot{client.NewBotClient("localhost:3333", "Tim")}
+  botclient, err := client.NewBotClient("localhost:3333", "Tim") 
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+
+  bot := &Bot{botclient}
   for {
     bot.Shield()
     bot.ScanArena()
