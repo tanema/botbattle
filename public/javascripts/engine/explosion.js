@@ -1,4 +1,4 @@
-function Explosion(x, y, sprite){
+function Explosion(x, y, sprite, num_of_explosions){
   this.x = x;
   this.y = y;
   this.sprite = sprite;
@@ -10,7 +10,9 @@ function Explosion(x, y, sprite){
     return parseInt(Math.random() * (max - min) + min);
   }
 
-  for(var i = 0; i < 20; i++){
+  num_of_explosions = num_of_explosions || 20;
+  console.log(num_of_explosions)
+  for(var i = 0; i < num_of_explosions; i++){
     this.explosions.push({
       index: rand(0, 5),
       x: x + rand(-10, 10),
