@@ -221,7 +221,6 @@ Map.prototype.on_scan = function(bot_id){
 
 Map.prototype.on_hit = function(bot_id, dmg){
   try{
-    this.sprites[bot_id].health -= dmg
     this.sprites[bot_id].hit(dmg)
   } catch(e){}
 }

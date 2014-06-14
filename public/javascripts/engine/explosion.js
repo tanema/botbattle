@@ -11,7 +11,6 @@ function Explosion(x, y, sprite, num_of_explosions){
   }
 
   num_of_explosions = num_of_explosions || 20;
-  console.log(num_of_explosions)
   for(var i = 0; i < num_of_explosions; i++){
     this.explosions.push({
       index: rand(0, 5),
