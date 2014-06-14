@@ -49,7 +49,7 @@ func (self *Scene) onWebSocketConnected(client *conn.Client) {
   }
   go func(){
 	  time.Sleep(1000 * time.Millisecond)
-    client.Emit("connected", result)
+    client.Emit("connected", result, ARENA_WIDTH, ARENA_HEIGHT)
   }()
   return
 }

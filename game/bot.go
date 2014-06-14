@@ -176,14 +176,47 @@ func (self *Bot) FireCannon() bool {
 
 func (self *Bot) Scan() []string {
 	var result []string
-	bots := self.LookingAt()
-	for _, bot := range bots {
-		json_status, _ := json.Marshal(bot.Status())
-		result = append(result, string(json_status))
+
+  x := float64(self.x) + 0.5
+  y := float64(self.y) + 0.5
+  arena_width := float64(ARENA_WIDTH)
+  arena_height := float64(ARENA_HEIGHT)
+
+  triangle := &triangle{}
+  triangle.p1 = &point{x, y}
+
+  switch self.rotation {
+  case 90:
+    diff := y/(5.0/1.0)
+    triangle.p2 = &point{diff + x, 0}
+    triangle.p3 = &point{-diff + x, 0}
+  case 270:
+    diff := (y - arena_height)/(5.0/10)
+    triangle.p2 = &point{diff + x, arena_height}
+    triangle.p3 = &point{-diff + x, arena_height}
+  case 0:
+    diff := (1.0/5.0)* -x;
+    triangle.p2 = &point{0.0, diff + y}
+    triangle.p3 = &point{0.0, -diff + y}
+  case 180:
+    diff := (1.0/5.0)*(arena_width - x);
+    triangle.p2 = &point{arena_width, diff + y}
+    triangle.p3 = &point{arena_width, -diff + y}
+  }
+
+	for _, bot := range self.scene.bots {
+    if triangle.pointIsInside(&point{
+          float64(bot.x) + 0.5,
+          float64(bot.y) + 0.5,
+        }) && bot != self {
+      json_status, _ := json.Marshal(bot.Status())
+      result = append(result, string(json_status))
+    }
 	}
 	time.Sleep(SCAN_WAIT * time.Millisecond)
 	return result
 }
+
 
 func (self *Bot) Shield() bool {
   if(self.ShieldReady){

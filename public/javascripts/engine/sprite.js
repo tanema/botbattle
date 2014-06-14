@@ -78,18 +78,41 @@ Sprite.prototype.draw = function(ctx){
 };
 
 Sprite.prototype.drawScan = function(ctx){
-  this._drawWeapon(function(start_x, start_y, end_x, end_y){
-    ctx.save(); 
-    ctx.beginPath();
-    ctx.moveTo(start_x, start_y);
-    ctx.lineTo(end_x, end_y);
+  var x = this.x * this.width + (this.width/2),
+      y = this.y * this.height + (this.height/2),
+      arena_width = this.map.arena_width * this.width + this.width,
+      arena_height = this.map.arena_height * this.height + this.height;
 
-    ctx.lineWidth = 10;
-    ctx.strokeStyle = 'rgba(0,255,0,0.5)';
+  ctx.save(); 
+  ctx.beginPath();
+  ctx.moveTo(x, y);
 
-    ctx.stroke();
-    ctx.restore();
-  })
+  switch(this.rotation){
+  case 90:
+    var diff = y/(5/1)
+    ctx.lineTo(diff + x, 0)
+    ctx.lineTo(-diff + x, 0)
+    break;
+  case 270:
+    var diff = (y - arena_height)/(5/1)
+    ctx.lineTo(diff + x, arena_height)
+    ctx.lineTo(-diff + x, arena_height)
+    break;
+  case 0:
+    var diff = (1/5)* -x;
+    ctx.lineTo(0, diff + y)
+    ctx.lineTo(0, -diff + y)
+    break;
+  case 180:
+    var diff = (1/5)*(arena_width - x);
+    ctx.lineTo(arena_width, diff + y )
+    ctx.lineTo(arena_width, -diff + y )
+    break;
+  }
+
+  ctx.fillStyle = 'rgba(0,255,0,0.5)';
+  ctx.fill();
+  ctx.restore();
 }
 
 Sprite.prototype.drawCannon = function(ctx){

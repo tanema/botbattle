@@ -45,7 +45,7 @@ Map.prototype.register_socket_events = function(){
   var self = this;
   console.log(" → connecting to sockets");
   this.socket = this.engine.socket;
-  this.socket.on("connected",     function(bots){ self.on_connect(bots)})
+  this.socket.on("connected",     function(bots, ARENA_WIDTH, ARENA_HEIGHT){ self.on_connect(bots, ARENA_WIDTH, ARENA_HEIGHT)})
   this.socket.on("register",      function(bot_id, x, y, rot, name){ self.on_register(bot_id, x, y, rot, name)})
   this.socket.on("kill",          function(bot_id){ self.on_kill(bot_id)})
   this.socket.on("rotate",        function(bot_id, rot){ self.on_rotate(bot_id, rot)})
@@ -55,7 +55,7 @@ Map.prototype.register_socket_events = function(){
   this.socket.on("scan",          function(bot_id){ self.on_scan(bot_id)})
   this.socket.on("shield",        function(bot_id, on){ self.on_shield(bot_id, on)})
   this.socket.on("bot hit",       function(bot_id, dmg){ self.on_hit(bot_id, dmg)})
-  this.socket.on("bot notch",       function(bot_id, killcount){ self.on_notch(bot_id, killcount)})
+  this.socket.on("bot notch",     function(bot_id, killcount){ self.on_notch(bot_id, killcount)})
 };
 
 Map.prototype.loaded = function (){
@@ -154,7 +154,10 @@ Map.prototype.drawHealthBars = function (ctx){
   }
 }
 
-Map.prototype.on_connect = function(bots){
+Map.prototype.on_connect = function(bots, ARENA_WIDTH, ARENA_HEIGHT){
+  this.arena_width = ARENA_WIDTH;
+  this.arena_height = ARENA_HEIGHT;
+
   for(var i = 0; i < bots.length; i++){
     var bot = bots[i]
     var sprite = new Sprite({
