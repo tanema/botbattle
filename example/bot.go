@@ -1,7 +1,7 @@
 package main
 
 import (
-	"botbattle/client"
+	"github.com/tanema/botbattle/client"
   "fmt"
 )
 

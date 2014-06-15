@@ -1,7 +1,7 @@
 package game
 
 import (
-	"botbattle/conn"
+	"github.com/tanema/botbattle/conn"
 	"encoding/json"
 	"math/rand"
 	"sort"

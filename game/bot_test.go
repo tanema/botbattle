@@ -3,7 +3,7 @@ package game
 import (
 	"testing"
 	"encoding/json"
-	"botbattle/conn"
+	"github.com/tanema/botbattle/conn"
 )
 
 func NewTestBot(name string, rot, x, y int) *Bot {

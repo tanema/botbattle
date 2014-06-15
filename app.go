@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"botbattle/game"
+	"github.com/tanema/botbattle/game"
 )
 
 func main() {

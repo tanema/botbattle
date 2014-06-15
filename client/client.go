@@ -1,7 +1,7 @@
 package client
 
 import (
-	"botbattle/conn"
+	"github.com/tanema/botbattle/conn"
 	"bufio"
 	"encoding/json"
 	"net"
