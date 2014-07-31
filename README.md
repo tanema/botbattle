@@ -1,7 +1,7 @@
 botbattle
 =========
 
-A battle arena built in go hack meetups.
+A battle arena built in go for hack meetups.
 
 ![kill all bots](https://github.com/tanema/botbattle/blob/master/public/images/screenshot.png)
 
