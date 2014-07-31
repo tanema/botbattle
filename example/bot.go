@@ -40,7 +40,7 @@ func (self *Bot) Chase(){
 }
 
 func main() {
-  botclient, err := client.NewBotClient("localhost:3333", "Tim") 
+  botclient, err := client.NewBotClient("localhost:3333", "Jon") 
   if err != nil {
     fmt.Println(err)
     return
