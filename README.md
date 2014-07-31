@@ -15,7 +15,7 @@ A battle arena built in go for a upcoming go hack meetup.
 package main
 
 import (
-	"botbattle/client"
+	"github.com/tanema/botbattle/client"
 )
 
 func main() {
