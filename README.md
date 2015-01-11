@@ -1,13 +1,14 @@
 botbattle
 =========
 
-A battle arena built in go for a upcoming go hack meetup.
+A battle arena built in go for hack meetups.
+
+![kill all bots](https://github.com/tanema/botbattle/blob/master/public/images/screenshot.png)
 
 ##Server
 
 - To run the webserver/game arena run `go run app.go`
 - open your web browser to `localhost:3000`
-
 
 ##Client/Bot
 
