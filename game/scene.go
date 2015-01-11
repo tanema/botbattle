@@ -12,17 +12,18 @@ const (
 )
 
 type Scene struct {
-	serv *conn.Server
-	bots map[int]*Bot
+	serv *conn.Server //server for socket connections
+	bots map[int]*Bot //map of bots connected to the server
 }
 
+//The is the arena (called the game scene)
 func NewScene() *Scene {
 	server := conn.NewServer()
 	newScene := &Scene{
 		server,
 		make(map[int]*Bot),
 	}
-	newScene.bindActions()
+	newScene.bindActions() //bind socket actions
 	return newScene
 }
 
