@@ -5,12 +5,12 @@ A battle arena built in go for hack meetups.
 
 ![kill all bots](https://github.com/tanema/botbattle/blob/master/public/images/screenshot.png)
 
-##Server
+## Server
 
 - To run the webserver/game arena run `go run app.go`
 - open your web browser to `localhost:3000`
 
-##Client/Bot
+## Client/Bot
 
 ```go
 package main
@@ -25,7 +25,7 @@ func main() {
 }
 ```
 
-###Client API
+### Client API
 ```go
 func NewBotClient(host, botname string) (*BotClient, error)
 type Status
@@ -44,14 +44,14 @@ type BotClient
   func MoveBackward() (*Status, error)
   func FireGun() (bool, error)
   func FireCannon() (bool, error)
-  func RotateLeft() (*Status, error)
-  func RotateRight() (*Status, error)
+  func RotLeft() (*Status, error)
+  func RotRight() (*Status, error)
   func Scan() ([]*Status, error)
   func Status() (*Status, error)
   func Shield() (bool, error)
 ```
 
-####func MoveForward() (\*Status, error)
+#### func MoveForward() (\*Status, error)
 
 - Moves forward in the direction that you are facing
 - has a delay of 500 milleseconds
@@ -59,7 +59,7 @@ type BotClient
     - current status of bot 
     - error if you have been killed or disconnected
 
-####func MoveBackward() (\*Status, error)
+#### func MoveBackward() (\*Status, error)
 
 - Moves backward in the direction that you are facing
 - has a delay of 500 milleseconds
@@ -67,7 +67,7 @@ type BotClient
     - current status of bot 
     - error if you have been killed or disconnected
 
-####func FireGun() (bool, error)
+#### func FireGun() (bool, error)
 
 - Will return true if the bullet hit somethin
 - has a damage of 25
@@ -76,7 +76,7 @@ type BotClient
     - bool of the success of the shot
     - error if you have been killed or disconnected
 
-####func FireCannon() (bool, error)
+#### func FireCannon() (bool, error)
 
 - Will return true if the bullet hit somethin
 - has a damage of 50
@@ -85,7 +85,7 @@ type BotClient
     - bool of the success of the shot
     - error if you have been killed or disconnected
 
-####func RotateLeft() (\*Status, error)
+#### func RotLeft() (\*Status, error)
 
 - Rotates -90 degrees
 - has a delay of 500 milleseconds
@@ -93,7 +93,7 @@ type BotClient
     - current status of bot 
     - error if you have been killed or disconnected
 
-####func RotateRight() (\*Status, error)
+#### func RotRight() (\*Status, error)
 
 - Rotates 90 degrees
 - has a delay of 500 milleseconds
@@ -101,7 +101,7 @@ type BotClient
     - current status of bot 
     - error if you have been killed or disconnected
 
-####func Scan() ([]\*Status, error)
+#### func Scan() ([]\*Status, error)
 
 - Will return array of status's of the bots you can see
 - returns empty array if you see nothing
@@ -110,14 +110,14 @@ type BotClient
     - current status of bots that you can see
     - error if you have been killed or disconnected
 
-####func Status() (\*Status, error)
+#### func Status() (\*Status, error)
 
 - Will return the status of your own bot please to refer to the status object for what info is included
 - returns 
     - current status of bot 
     - error if you have been killed or disconnected
 
-####func Shield() (bool, error)
+#### func Shield() (bool, error)
 
 - Will return true if the shield was enabled
 - has a warmup time of 5000 millesecond
