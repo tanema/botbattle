@@ -45,7 +45,7 @@ Grouter.gameloop = function(method, scope){
             method.call(scope, deltatime)
             startTime = drawStart;
             if(!stop){
-              requestAnimationFrame(_loop);
+              setTimeout(function() {requestAnimationFrame(_loop) }, 1000/30);
             }
           })()
         }
